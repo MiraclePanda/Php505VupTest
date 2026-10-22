@@ -1,0 +1,41 @@
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=EUC-JP
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<title>商品管理システム</title>
+<style type="text/css">
+body { font-family: sans-serif; font-size: 13px; }
+table.list { border-collapse: collapse; }
+table.list th, table.list td { border: 1px solid #999; padding: 3px 6px; }
+table.list th { background: #ddeeff; }
+.msg { color: #008800; }
+.error { color: #cc0000; }
+</style>
+</head>
+<body>
+<h1><a href="index.php">商品管理システム</a></h1>
+<div class="nav">
+<a href="login.php">ログイン</a>
+</div>
+<hr>
+
+<form method="get" action="/index.php">
+キーワード: <input type="text" name="keyword" value="\" size="30">
+カテゴリ:
+<select name="category">
+<option value="">すべて</option>
+<option value="4">書籍</option>
+<option value="2">食品</option>
+<option value="3">日用品</option>
+<option value="1">文房具</option>
+</select>
+<input type="submit" value="検索">
+</form>
+
+<p>「\」に該当する商品はありません。</p>
+<hr>
+<div class="footer">Copyright &copy; 2005 Sample Shop</div>
+</body>
+</html>

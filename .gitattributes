@@ -2,3 +2,5 @@
 #   git config diff.eucjp.textconv "iconv -f EUC-JP -t UTF-8"
 app/** diff=eucjp
 db/init/*.sql diff=eucjp
+newapp/app/** diff=eucjp
+newapp/docs/characterization-php85/** diff=eucjp
