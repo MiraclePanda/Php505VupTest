@@ -28,8 +28,9 @@ normalize() {
   | cat -s
 }
 
-# アプリは EUC-JP なので、日本語のパラメータは EUC-JP にして送る
-e() { printf '%s' "$1" | iconv -f UTF-8 -t EUC-JP; }
+# 日本語のパラメータはアプリの文字コード（.upgrade.env の SRC_ENCODING。既定 EUC-JP）にして送る
+. "$(dirname "$0")/../../scripts/upgrade/env.sh"
+e() { printf '%s' "$1" | iconv -f UTF-8 -t "$SRC_ENCODING"; }
 
 # req <ケース名> <パス> [curl の追加引数...]
 req() {
@@ -77,4 +78,13 @@ req 25_search_wildcard       /index.php -G --data-urlencode "keyword=%"
 req 26_search_category_text  /index.php -G --data-urlencode "keyword=" --data-urlencode "category=abc"
 req 27_search_page_newline   /index.php -G --data-urlencode "keyword=" --data-urlencode "category=" --data-urlencode $'page=2\n'
 req 28_search_backslash      /index.php -G --data-urlencode 'keyword=\'
+# --- 型の違う入力（PHP 8 では文字列関数に配列を渡すと TypeError になる）
+req 29_search_keyword_array  "/index.php?keyword%5B%5D=x"
+req 30_search_category_array "/index.php?category%5B%5D=1"
+req 31_login_array           /login.php --data-urlencode "login_id[]=admin" --data-urlencode "password[]=admin123"
+req 32_login_ok_again        /login.php --data-urlencode "login_id=admin" --data-urlencode "password=admin123"
+req 33_update_name_array     "/edit.php?id=10" \
+      --data-urlencode "code=BK-0001" --data-urlencode "name[]=x" \
+      --data-urlencode "category_id=4" --data-urlencode "price=1980" --data-urlencode "stock=20"
+req 34_logout_again          /logout.php
 echo "done: $(ls "$OUT" | wc -l) cases"
