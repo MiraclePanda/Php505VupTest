@@ -1,0 +1,97 @@
+<?
+/*
+ * 商品検索画面
+ *   パラメータ: keyword, category, page, msg
+ */
+require_once("include/config.inc");
+require_once("include/db.inc");
+require_once("include/functions.inc");
+
+session_start();
+$conn = db_connect();
+
+if (!isset($page) || !ereg("^[0-9]+$", $page) || $page < 1) {
+    $page = 1;
+}
+$categories = get_categories();
+
+// 検索条件の組み立て
+$where = "1=1";
+if ($keyword != "") {
+    // 全角スペースも区切りとして扱う
+    $keyword = trim(mb_convert_kana($keyword, "s"));
+    $words = split(" ", $keyword);
+    for ($i = 0; $i < count($words); $i++) {
+        if ($words[$i] == "") {
+            continue;
+        }
+        $where .= " AND (p.name LIKE '%" . $words[$i] . "%' OR p.code LIKE '%" . $words[$i] . "%')";
+    }
+}
+if ($category != 0) {
+    $where .= " AND p.category_id = " . $category;
+}
+
+// 件数
+$result = db_query("SELECT COUNT(*) FROM products p WHERE " . $where);
+odbc_fetch_row($result);
+$total = odbc_result($result, 1);
+$max_page = ceil($total / PAGE_SIZE);
+$offset = ($page - 1) * PAGE_SIZE;
+
+// 一覧
+$sql = "SELECT p.id AS id, p.code AS code, p.name AS name, p.price AS price, p.stock AS stock, c.name AS category_name"
+     . " FROM products p LEFT JOIN categories c ON p.category_id = c.id"
+     . " WHERE " . $where
+     . " ORDER BY p.code"
+     . " LIMIT " . PAGE_SIZE . " OFFSET " . $offset;
+$result = db_query($sql);
+
+$query_string = "keyword=" . urlencode(stripslashes($keyword)) . "&category=" . $category;
+
+include("include/header.inc");
+?>
+<? if ($msg == "updated") { ?>
+<p class="msg">商品情報を更新しました。</p>
+<? } ?>
+
+<form method="get" action="<?=$PHP_SELF?>">
+キーワード: <input type="text" name="keyword" value="<?=h(stripslashes($keyword))?>" size="30">
+カテゴリ:
+<select name="category">
+<option value="">すべて</option>
+<?=category_options($categories, $category)?>
+</select>
+<input type="submit" value="検索">
+</form>
+
+<? if ($total == 0) { ?>
+<p>「<?=stripslashes($keyword)?>」に該当する商品はありません。</p>
+<? } else { ?>
+<p><?=$total?> 件中 <?=$offset + 1?>〜<?=min($offset + PAGE_SIZE, $total)?> 件を表示</p>
+<table class="list">
+<tr>
+<th>記号</th><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>価格</th><th>在庫</th><? if (is_login()) { ?><th>操作</th><? } ?>
+</tr>
+<? while ($row = odbc_fetch_array($result)) { format_price(&$row); ?>
+<tr>
+<td><?=code_prefix($row['code'])?></td>
+<td><?=h($row['code'])?></td>
+<td><?=h($row['name'])?></td>
+<td><?=h($row['category_name'])?></td>
+<td align="right"><?=$row['price_disp']?></td>
+<td align="right"><?=$row['stock']?></td>
+<? if (is_login()) { ?><td><a href="edit.php?id=<?=$row['id']?>">編集</a></td><? } ?>
+</tr>
+<? } ?>
+</table>
+
+<div class="pager">
+<? if ($page > 1) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; 前へ</a><? } ?>
+<?=$page?> / <?=$max_page?>
+<? if ($page < $max_page) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page + 1?>">次へ &gt;&gt;</a><? } ?>
+</div>
+<? } ?>
+<?
+include("include/footer.inc");
+?>
