@@ -1,11 +1,11 @@
-# PHP 5.0.5 + Apache 2.0 (mod_php) の当時相当の実行環境
+# PHP 5.0.5 + Apache 2.0 (mod_php) + SQLite 2（PHP 同梱）の当時相当の実行環境
 #   2005年当時の典型構成を再現するため、Debian 4.0 (etch) 上で
 #   Apache 2.0.65 と PHP 5.0.5 をソースからビルドする。
 FROM debian/eol:etch
 
 RUN apt-get update \
  && apt-get install -y --force-yes \
-      build-essential libxml2-dev libmysqlclient15-dev zlib1g-dev \
+      build-essential libxml2-dev zlib1g-dev \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ソースは Docker デーモン側で取得する（etch の wget は現在の TLS に対応しないため）
@@ -26,8 +26,6 @@ RUN cd /usr/src && mkdir php && tar xzf php.tar.gz -C php --strip-components=1 \
       --prefix=/usr/local/php5 \
       --with-apxs2=/usr/local/apache2/bin/apxs \
       --with-config-file-path=/usr/local/php5/lib \
-      --with-mysql=/usr \
-      --with-mysqli=/usr/bin/mysql_config \
       --enable-mbstring \
       --with-zlib \
       --without-pear \
@@ -42,8 +40,10 @@ RUN sed -i \
       -e 's#^CustomLog .*#CustomLog /proc/self/fd/1 common#' \
       /usr/local/apache2/conf/httpd.conf \
  && echo 'Include conf/httpd-app.conf' >> /usr/local/apache2/conf/httpd.conf \
- && mkdir -p /var/www/app
+ && mkdir -p /var/www/app /var/www/data && chmod 777 /var/www/data
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 ENV PATH=/usr/local/php5/bin:/usr/local/apache2/bin:$PATH
 EXPOSE 80
-CMD ["/usr/local/apache2/bin/httpd", "-D", "FOREGROUND"]
+CMD ["/usr/local/bin/start.sh"]

@@ -1,4 +1,4 @@
-# 新環境: PHP 8.5 + Apache 2.4 + MySQL 8.4
+# 新環境: PHP 8.5 + Apache 2.4 + SQLite 3
 #   docker compose -f docker/compose.modern.yml up -d --build
 #   http://localhost:8085/
 name: php505-modern
@@ -8,15 +8,5 @@ services:
     ports:
       - "8085:80"
     volumes:
-      - ../app:/var/www/html
-    depends_on:
-      - db
-  db:
-    image: mysql:8.4
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: shop
-      MYSQL_USER: shop
-      MYSQL_PASSWORD: shop
-    volumes:
-      - ../db/init:/docker-entrypoint-initdb.d:ro
+      - ../app:/var/www/app
+      - ../db:/var/www/db:ro

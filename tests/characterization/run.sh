@@ -6,7 +6,9 @@
 #     例) 旧環境で記録: run.sh http://localhost:8050 tests/characterization/golden
 #         新環境で取得: run.sh http://localhost:8085 tests/characterization/actual
 #   実行前に scripts/reset-db.sh で DB を初期化すること（更新ケースを含むため）。
+#   出力は EUC-JP のバイト列のまま保存する（文字コードも比較対象）。
 set -euo pipefail
+export LC_ALL=C
 BASE_URL=${1:?usage: $0 <base_url> <out_dir>}
 OUT=${2:?usage: $0 <base_url> <out_dir>}
 mkdir -p "$OUT"
@@ -26,6 +28,9 @@ normalize() {
   | cat -s
 }
 
+# アプリは EUC-JP なので、日本語のパラメータは EUC-JP にして送る
+e() { printf '%s' "$1" | iconv -f UTF-8 -t EUC-JP; }
+
 # req <ケース名> <パス> [curl の追加引数...]
 req() {
   local name=$1 path=$2; shift 2
@@ -36,15 +41,15 @@ req() {
 echo "== $BASE_URL -> $OUT"
 # --- 検索（未ログイン）
 req 01_search_top            /index.php
-req 02_search_keyword        /index.php -G --data-urlencode "keyword=ボールペン"
-req 03_search_zenkaku_space  /index.php -G --data-urlencode "keyword=ノート　B5"
+req 02_search_keyword        /index.php -G --data-urlencode "keyword=$(e 'ボールペン')"
+req 03_search_zenkaku_space  /index.php -G --data-urlencode "keyword=$(e 'ノート　B5')"
 req 04_search_category       /index.php -G --data-urlencode "keyword=" --data-urlencode "category=2"
 req 05_search_category_all   /index.php -G --data-urlencode "keyword=" --data-urlencode "category="
 req 06_search_page2          /index.php -G --data-urlencode "keyword=" --data-urlencode "category=" --data-urlencode "page=2"
 req 07_search_page_invalid   /index.php -G --data-urlencode "page=abc"
-req 08_search_noresult       /index.php -G --data-urlencode "keyword=存在しない商品"
+req 08_search_noresult       /index.php -G --data-urlencode "keyword=$(e '存在しない商品')"
 req 09_search_quote          /index.php -G --data-urlencode "keyword=Let's"
-req 10_search_html_chars     /index.php -G --data-urlencode "keyword=<特選>"
+req 10_search_html_chars     /index.php -G --data-urlencode "keyword=$(e '<特選>')"
 # --- ログイン
 req 11_edit_without_login    "/edit.php?id=1"
 req 12_login_form            /login.php
@@ -55,12 +60,12 @@ req 15_search_logged_in      /index.php
 req 16_edit_view             "/edit.php?id=10"
 req 17_edit_not_found        "/edit.php?id=999"
 req 18_update_invalid        "/edit.php?id=10" \
-      --data-urlencode "code=bk-1" --data-urlencode "name=O'Reilly 本" \
+      --data-urlencode "code=bk-1" --data-urlencode "name=$(e 'O'\''Reilly 本')" \
       --data-urlencode "category_id=9" --data-urlencode "price=abc" --data-urlencode "stock="
 req 19_update_ok             "/edit.php?id=10" \
-      --data-urlencode "code=BK-0001" --data-urlencode "name=Let's 英会話 入門 改訂版" \
+      --data-urlencode "code=BK-0001" --data-urlencode "name=$(e 'Let'\''s 英会話 入門 改訂版')" \
       --data-urlencode "category_id=4" --data-urlencode "price=1980" --data-urlencode "stock=20"
-req 20_search_after_update   /index.php -G --data-urlencode "keyword=英会話" --data-urlencode "msg=updated"
+req 20_search_after_update   /index.php -G --data-urlencode "keyword=$(e '英会話')" --data-urlencode "msg=updated"
 # --- ログアウト
 req 21_logout                /logout.php
 req 22_search_after_logout   /index.php

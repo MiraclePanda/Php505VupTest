@@ -1,8 +1,8 @@
 <?
 /*
- * å•†å“ç·¨é›†ç”»é¢
- *   GET  : id ã®å•†å“ã‚’è¡¨ç¤º
- *   POST : å…¥åŠ›ãƒã‚§ãƒƒã‚¯ã®ä¸Šã€æ›´æ–°ã—ã¦ä¸€è¦§ã¸æˆ»ã‚‹
+ * ¾¦ÉÊÊÔ½¸²èÌÌ
+ *   GET  : id ¤Î¾¦ÉÊ¤òÉ½¼¨
+ *   POST : ÆþÎÏ¥Á¥§¥Ã¥¯¤Î¾å¡¢¹¹¿·¤·¤Æ°ìÍ÷¤ØÌá¤ë
  */
 require_once("include/config.inc");
 require_once("include/db.inc");
@@ -36,13 +36,13 @@ if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
 } else {
     $product = Product::find($id);
     if (!$product) {
-        die("å•†å“ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
+        die("¾¦ÉÊ¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó¡£");
     }
 }
 
 include("include/header.inc");
 ?>
-<h2>å•†å“ç·¨é›†</h2>
+<h2>¾¦ÉÊÊÔ½¸</h2>
 
 <? if (count($errors) > 0) { ?>
 <ul class="error">
@@ -54,14 +54,14 @@ include("include/header.inc");
 
 <form method="post" action="edit.php?id=<?=$id?>">
 <table>
-<tr><th>å•†å“ã‚³ãƒ¼ãƒ‰</th><td><input type="text" name="code" value="<?=h($product->code)?>" size="10"></td></tr>
-<tr><th>å•†å“å</th><td><input type="text" name="name" value="<?=h($product->name)?>" size="40"></td></tr>
-<tr><th>ã‚«ãƒ†ã‚´ãƒª</th><td><select name="category_id"><?=category_options($categories, $product->category_id)?></select></td></tr>
-<tr><th>ä¾¡æ ¼</th><td><input type="text" name="price" value="<?=h($product->price)?>" size="10"> å††</td></tr>
-<tr><th>åœ¨åº«æ•°</th><td><input type="text" name="stock" value="<?=h($product->stock)?>" size="10"></td></tr>
+<tr><th>¾¦ÉÊ¥³¡¼¥É</th><td><input type="text" name="code" value="<?=h($product->code)?>" size="10"></td></tr>
+<tr><th>¾¦ÉÊÌ¾</th><td><input type="text" name="name" value="<?=h($product->name)?>" size="40"></td></tr>
+<tr><th>¥«¥Æ¥´¥ê</th><td><select name="category_id"><?=category_options($categories, $product->category_id)?></select></td></tr>
+<tr><th>²Á³Ê</th><td><input type="text" name="price" value="<?=h($product->price)?>" size="10"> ±ß</td></tr>
+<tr><th>ºß¸Ë¿ô</th><td><input type="text" name="stock" value="<?=h($product->stock)?>" size="10"></td></tr>
 </table>
-<input type="submit" value="æ›´æ–°">
-<a href="index.php">ä¸€è¦§ã¸æˆ»ã‚‹</a>
+<input type="submit" value="¹¹¿·">
+<a href="index.php">°ìÍ÷¤ØÌá¤ë</a>
 </form>
 <?
 include("include/footer.inc");

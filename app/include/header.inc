@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
 <title><?=APP_TITLE?></title>
 <style type="text/css">
 body { font-family: sans-serif; font-size: 13px; }
@@ -15,9 +15,9 @@ table.list th { background: #ddeeff; }
 <h1><a href="index.php"><?=APP_TITLE?></a></h1>
 <div class="nav">
 <? if (is_login()) { ?>
-„É≠„Ç∞„Ç§„É≥‰∏≠: <?=h($login_user)?> „Åï„Çì | <a href="logout.php">„É≠„Ç∞„Ç¢„Ç¶„Éà</a>
+•Ì•∞•§•Û√Ê: <?=h($login_user)?> §µ§Û | <a href="logout.php">•Ì•∞•¢•¶•»</a>
 <? } else { ?>
-<a href="login.php">„É≠„Ç∞„Ç§„É≥</a>
+<a href="login.php">•Ì•∞•§•Û</a>
 <? } ?>
 </div>
 <hr>

@@ -1,15 +1,12 @@
 <?php
 /*
- * å•†å“ç®¡ç†ã‚·ã‚¹ãƒ†ãƒ  è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
+ * ¾¦ÉÊ´ÉÍý¥·¥¹¥Æ¥à ÀßÄê¥Õ¥¡¥¤¥ë
  * Last modified: 2005/09/12
  */
 
-// DBæŽ¥ç¶šæƒ…å ±
-$DB_HOST = "db";
-$DB_USER = "shop";
-$DB_PASS = "shop";
-$DB_NAME = "shop";
+// DB¥Õ¥¡¥¤¥ë¡Ê¸ø³«¥Ç¥£¥ì¥¯¥È¥ê¤Î³°¤ËÃÖ¤¯¤³¤È¡Ë
+$DB_FILE = "/var/www/data/shop.db";
 
-define("APP_TITLE", "å•†å“ç®¡ç†ã‚·ã‚¹ãƒ†ãƒ ");
+define("APP_TITLE", "¾¦ÉÊ´ÉÍý¥·¥¹¥Æ¥à");
 define("PAGE_SIZE", 5);
 ?>

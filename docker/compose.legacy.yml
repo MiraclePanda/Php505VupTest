@@ -1,30 +1,14 @@
-# 旧環境: PHP 5.0.5 + Apache 2.0 + MySQL 5.5
+# 旧環境: PHP 5.0.5 + Apache 2.0 + SQLite 2
 #   docker compose -f docker/compose.legacy.yml up -d --build
 #   http://localhost:8050/
 name: php505-legacy
 services:
   web:
     build: ./legacy
-    # etch と mysql:5.5 は amd64 のみ（Apple Silicon ではエミュレーションで動く）
+    # etch イメージは amd64 のみ（Apple Silicon ではエミュレーションで動く）
     platform: linux/amd64
     ports:
       - "8050:80"
     volumes:
       - ../app:/var/www/app
-    depends_on:
-      - db
-  db:
-    # MySQL 4.1/5.0 の公式イメージは存在しないため、入手可能な最古の 5.5 を使う
-    image: mysql:5.5
-    platform: linux/amd64
-    command:
-      - --character-set-server=utf8
-      - --collation-server=utf8_general_ci
-      - --skip-character-set-client-handshake
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: shop
-      MYSQL_USER: shop
-      MYSQL_PASSWORD: shop
-    volumes:
-      - ../db/init:/docker-entrypoint-initdb.d:ro
+      - ../db:/var/www/db:ro

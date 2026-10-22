@@ -8,7 +8,14 @@ PHP 5.0.5 で作られたアプリケーションを、Claude Code を使って 
 
 ## サンプルアプリ（`app/`）
 
-2005 年頃の典型的な書き方で作った小さな商品管理システム。
+2005 年頃の典型的な書き方で作った小さな商品管理システム。文字コードは EUC-JP。
+本番の想定 DB は Symfoware だが、検証用に SQLite で代用している。
+
+EUC-JP のファイルの差分を読むには、一度だけ次を実行する。
+
+```sh
+git config diff.eucjp.textconv "iconv -f EUC-JP -t UTF-8"
+```
 
 | 画面 | 内容 |
 |---|---|
@@ -19,10 +26,10 @@ PHP 5.0.5 で作られたアプリケーションを、Claude Code を使って 
 ## 使い方
 
 ```sh
-# 旧環境: PHP 5.0.5 + Apache 2.0 + MySQL 5.5 → http://localhost:8050/
+# 旧環境: PHP 5.0.5 + Apache 2.0 + SQLite 2 → http://localhost:8050/
 docker compose -f docker/compose.legacy.yml up -d --build
 
-# 新環境: PHP 8.5 + Apache 2.4 + MySQL 8.4 → http://localhost:8085/
+# 新環境: PHP 8.5 + Apache 2.4 + SQLite 3 → http://localhost:8085/
 docker compose -f docker/compose.modern.yml up -d --build
 
 # 特性テスト
