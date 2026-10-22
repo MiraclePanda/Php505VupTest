@@ -69,4 +69,11 @@ req 20_search_after_update   /index.php -G --data-urlencode "keyword=$(e '英会
 # --- ログアウト
 req 21_logout                /logout.php
 req 22_search_after_logout   /index.php
+# --- 検索の境界（移行で結果が変わりやすいもの）
+req 23_search_one_char       /index.php -G --data-urlencode "keyword=$(e 'ボ')"
+req 24_search_byte_boundary  /index.php -G --data-urlencode "keyword=$(e '酬')"
+req 25_search_wildcard       /index.php -G --data-urlencode "keyword=%"
+req 26_search_category_text  /index.php -G --data-urlencode "keyword=" --data-urlencode "category=abc"
+req 27_search_page_newline   /index.php -G --data-urlencode "keyword=" --data-urlencode "category=" --data-urlencode $'page=2\n'
+req 28_search_backslash      /index.php -G --data-urlencode 'keyword=\'
 echo "done: $(ls "$OUT" | wc -l) cases"
