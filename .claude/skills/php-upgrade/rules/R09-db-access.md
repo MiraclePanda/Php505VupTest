@@ -9,6 +9,10 @@ detect:
   - '\b(mysql|pg|oci|sqlite|sybase|mssql|ibase|ifx)_\w+\s*\('
   - '(SELECT|INSERT|UPDATE|DELETE)\b[^;]*"\s*\.\s*\$'
   - '(SELECT|INSERT|UPDATE|DELETE)\b[^"]*\$\w+'
+  - '''%?"\s*\.\s*[\$\w]'
+  - '''\$\w+(->\w+)*'''
+  - '"[^"]*\b\w+\s*=\s*\$\w+'
+  - '=\s*"\s*\.\s*\$'
 ---
 ## 何が起きるか
 - magic_quotes がなくなる（R05）ので、文字列連結の SQL は `'` を含む入力でエラーになり、SQL インジェクションも素通しになる。
