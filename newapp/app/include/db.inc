@@ -14,6 +14,8 @@ function db_connect()
     try {
         $conn = new PDO("odbc:" . $DB_DSN, $DB_USER, $DB_PASS);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // 列名の大文字小文字はドライバ依存（Symfoware などは大文字で返す）。画面は小文字の列名で読むので揃える
+        $conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
     } catch (PDOException $e) {
         die("DB接続エラー: " . db_to_app($e->getMessage()));
     }
