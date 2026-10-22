@@ -16,13 +16,15 @@ $password = request_var('password');
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    // 未指定のときは旧と同じく空文字で照合する（旧: '' を連結。null を渡すと = NULL になり意味が変わる）
     $sql = "SELECT * FROM users"
-         . " WHERE login_id = '" . $login_id . "'"
-         . " AND password = '" . md5($password) . "'";
-    $result = db_query($sql);
-    if (odbc_fetch_row($result)) {
+         . " WHERE login_id = ?"
+         . " AND password = ?";
+    $result = db_query($sql, array((string)$login_id, md5((string)$password)));
+    $row = db_fetch($result);
+    if ($row) {
         // 旧: session_register("login_user") + グローバル変数 $login_user への代入
-        $_SESSION['login_user'] = odbc_result($result, "name");
+        $_SESSION['login_user'] = $row['name'];
         header("Location: index.php");
         exit;
     }

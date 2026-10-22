@@ -29,8 +29,8 @@ class Product
     // Product::find($id) で呼び出す（PHP 8 では static がないと Error）
     static function find($id)
     {
-        $result = db_query("SELECT * FROM products WHERE id = " . $id);
-        $row = odbc_fetch_array($result);
+        $result = db_query("SELECT * FROM products WHERE id = ?", array($id));
+        $row = db_fetch($result);
         if (!$row) {
             return false;
         }
@@ -65,15 +65,16 @@ class Product
     function save()
     {
         $sql = "UPDATE products SET"
-             . " code = '$this->code',"
-             . " name = '$this->name',"
-             . " category_id = $this->category_id,"
-             . " price = $this->price,"
-             . " stock = $this->stock,"
-             . " updated_at = '" . date("Y-m-d H:i:s") . "'"
-             . " WHERE id = $this->id";
-        $result = db_query($sql);
-        return odbc_num_rows($result);
+             . " code = ?,"
+             . " name = ?,"
+             . " category_id = ?,"
+             . " price = ?,"
+             . " stock = ?,"
+             . " updated_at = ?"
+             . " WHERE id = ?";
+        $result = db_query($sql, array($this->code, $this->name, $this->category_id, $this->price,
+            $this->stock, date("Y-m-d H:i:s"), $this->id));
+        return db_affected($result);
     }
 }
 ?>

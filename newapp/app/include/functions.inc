@@ -39,8 +39,8 @@ function get_categories()
 {
     $cats = array();
     $result = db_query("SELECT id, name FROM categories");
-    while (odbc_fetch_row($result)) {
-        $cats[odbc_result($result, "id")] = odbc_result($result, "name");
+    while ($row = db_fetch($result)) {
+        $cats[$row['id']] = $row['name'];
     }
     uasort($cats, 'compare_category_name');
     return $cats;

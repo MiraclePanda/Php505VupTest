@@ -24,7 +24,9 @@ if (!isset($page) || !is_string($page) || !preg_match('/^[0-9]+$/D', $page) || $
 $categories = get_categories();
 
 // 検索条件の組み立て
+// 旧: 値を SQL に文字列連結していた（magic_quotes_sybase で ' が '' になっている前提）。値はプレースホルダで渡す
 $where = "1=1";
+$params = array();
 if ($keyword != "") {
     // 全角スペースも区切りとして扱う
     $keyword = trim(mb_convert_kana($keyword, "s"));
@@ -33,17 +35,19 @@ if ($keyword != "") {
         if ($words[$i] == "") {
             continue;
         }
-        $where .= " AND (p.name LIKE '%" . $words[$i] . "%' OR p.code LIKE '%" . $words[$i] . "%')";
+        $where .= " AND (p.name LIKE ? OR p.code LIKE ?)";
+        $params[] = "%" . $words[$i] . "%";
+        $params[] = "%" . $words[$i] . "%";
     }
 }
 if ($category != 0) {
-    $where .= " AND p.category_id = " . $category;
+    $where .= " AND p.category_id = ?";
+    $params[] = $category;
 }
 
 // 件数
-$result = db_query("SELECT COUNT(*) FROM products p WHERE " . $where);
-odbc_fetch_row($result);
-$total = odbc_result($result, 1);
+$result = db_query("SELECT COUNT(*) FROM products p WHERE " . $where, $params);
+$total = db_fetch_value($result);
 $max_page = ceil($total / PAGE_SIZE);
 $offset = ($page - 1) * PAGE_SIZE;
 
@@ -53,7 +57,7 @@ $sql = "SELECT p.id AS id, p.code AS code, p.name AS name, p.price AS price, p.s
      . " WHERE " . $where
      . " ORDER BY p.code"
      . " LIMIT " . PAGE_SIZE . " OFFSET " . $offset;
-$result = db_query($sql);
+$result = db_query($sql, $params);
 
 // 旧: magic_quotes_gpc（sybase）で '' になった入力を stripslashes で戻していた。入力は生の値になったので不要
 $query_string = "keyword=" . urlencode((string)$keyword) . "&category=" . $category;
@@ -82,7 +86,7 @@ include("include/header.inc");
 <tr>
 <th>記号</th><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>価格</th><th>在庫</th><?php if (is_login()) { ?><th>操作</th><?php } ?>
 </tr>
-<?php while ($row = odbc_fetch_array($result)) { format_price($row); ?>
+<?php while ($row = db_fetch($result)) { format_price($row); ?>
 <tr>
 <td><?=code_prefix($row['code'])?></td>
 <td><?=h($row['code'])?></td>
