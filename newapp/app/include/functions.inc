@@ -3,6 +3,13 @@
  * 共通関数
  */
 
+// 旧 PHP（7 以前）が「文字列と数値の比較」で文字列を数値にした規則を再現する（先頭の数値部分。なければ 0）。
+// PHP 8 では数値でない文字列と数値の == は文字列比較になり、"" == 0 や "abc" == 0 が偽になるため
+function legacy_num($value)
+{
+    return is_numeric($value) ? $value + 0 : (float)$value;
+}
+
 // リクエストパラメータを取り出す（旧: register_globals = On で自動的にグローバル変数になっていた）
 // 旧環境の variables_order = "EGPCS" と同じく、Cookie > POST > GET の順に後勝ちで探す。なければ null
 function request_var($name)
@@ -59,7 +66,8 @@ function category_options($cats, $selected)
 {
     $html = "";
     foreach ($cats as $id => $name) {
-        $sel = ($id == $selected) ? " selected" : "";
+        // 旧: $id == $selected（整数と入力文字列の比較）。旧の比較規則で判定する
+        $sel = ($id == legacy_num($selected)) ? " selected" : "";
         $html .= "<option value=\"" . $id . "\"" . $sel . ">" . h($name) . "</option>\n";
     }
     return $html;

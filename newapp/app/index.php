@@ -41,7 +41,8 @@ if ($keyword != "") {
         $params[] = "%" . $words[$i] . "%";
     }
 }
-if ($category != 0) {
+// 旧: $category != 0。PHP 8 では "" != 0 が真になり、カテゴリ未指定でも絞り込んで 0 件になる
+if (legacy_num($category) != 0) {
     $where .= " AND p.category_id = ?";
     $params[] = $category;
 }
