@@ -2,7 +2,8 @@
 # 移行先（newapp）の検証を一通り行う。検証担当エージェントが使う。
 #   1. PHP 8.5 で構文チェック  2. 文字コードの確認  3. 新環境を起動し DB を初期化（＋データ移行）
 #   4. 特性テストを実行  5. 応答とエラーログから PHP のエラー・警告を検出
-#   6. ゴールデンがあれば比較。なければ直前のスナップショットとの差分（このステップで変わったケース）を表示
+#   6. ゴールデンがあれば比較。なければ旧環境の挙動の推定（tests/characterization/expectations.tsv）と照合し、
+#      直前のスナップショットとの差分（このステップで変わったケース）を表示
 #
 #   usage: scripts/upgrade/verify.sh [label]
 #     label: スナップショット名（例: R03）。.work/snapshots/<label>/ に結果を保存する
@@ -73,7 +74,9 @@ if ls "$GOLDEN"/*.txt >/dev/null 2>&1; then
   echo "- ゴールデン（旧環境の記録）と比較"
   tests/characterization/compare.sh "$GOLDEN" "$ACTUAL" || fail=1
 else
-  echo "- ゴールデンなし（旧環境で未記録）。旧環境との一致は確認できない"
+  echo "- ゴールデンなし（旧環境で未記録）。旧環境の挙動の推定（expectations.tsv）と照合する"
+  python3 tests/characterization/check-expectations.py "$ACTUAL" | sed 's/^/  /'
+  [ "${PIPESTATUS[0]}" -eq 0 ] || fail=1
   if [ -n "$prev" ] && [ "$prev" != "$LABEL" ]; then
     changed=$(diff -rq "$SNAP/$prev" "$ACTUAL" | sed -E 's@.*/([^/]+)\.txt.*@\1@' | tr '\n' ' ')
     echo "- 直前のスナップショット（$prev）から変わったケース: ${changed:-なし}"
