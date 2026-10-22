@@ -16,10 +16,10 @@ if (!is_login()) {
 }
 $conn = db_connect();
 $categories = get_categories();
-$id = (integer)$id;
+$id = (int)$id;
 
 if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
-    $product =& new Product();
+    $product = new Product();
     $product->id          = $id;
     $product->code        = $HTTP_POST_VARS['code'];
     $product->name        = $HTTP_POST_VARS['name'];

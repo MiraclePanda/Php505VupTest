@@ -46,6 +46,8 @@ def main():
     ap.add_argument("target")
     ap.add_argument("--rule")
     ap.add_argument("--format", default="md", choices=["md", "tsv"])
+    ap.add_argument("--include-comments", action="store_true",
+                    help="コメント行（//, #, /*, * で始まる行）も対象にする")
     a = ap.parse_args()
 
     files = []
@@ -64,6 +66,8 @@ def main():
         for path in files:
             text = open(path, "rb").read().decode(ENC, errors="replace")
             for no, line in enumerate(text.split("\n"), 1):
+                if not a.include_comments and re.match(r"\s*(//|#|/\*|\*)", line):
+                    continue
                 if any(p.search(line) for p in rule["detect"]):
                     hits.append((path, no, line.strip()))
         total += len(hits)

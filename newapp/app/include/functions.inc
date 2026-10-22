@@ -9,8 +9,8 @@ function h($str)
 }
 
 // 価格を表示用に整形して $row['price_disp'] に入れる
-// ※呼び出し側で参照渡しすること format_price(&$row)
-function format_price($row)
+// ※参照渡しで受ける（旧: 呼び出し側の実行時参照渡し format_price(&$row) に頼っていた）
+function format_price(&$row)
 {
     $row['price_disp'] = number_format($row['price']) . "円";
 }
@@ -18,7 +18,8 @@ function format_price($row)
 // 商品コードの先頭2文字（分類記号）
 function code_prefix($code)
 {
-    return $code{0} . $code{1};
+    // 旧: $code{0} . $code{1}。範囲外は旧環境では Notice（非表示）で空文字だったので、警告の出ない substr で同じ結果にする
+    return substr($code, 0, 2);
 }
 
 // カテゴリ一覧を取得（名前順）

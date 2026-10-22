@@ -73,7 +73,7 @@ include("include/header.inc");
 <tr>
 <th>記号</th><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>価格</th><th>在庫</th><?php if (is_login()) { ?><th>操作</th><?php } ?>
 </tr>
-<?php while ($row = odbc_fetch_array($result)) { format_price(&$row); ?>
+<?php while ($row = odbc_fetch_array($result)) { format_price($row); ?>
 <tr>
 <td><?=code_prefix($row['code'])?></td>
 <td><?=h($row['code'])?></td>
