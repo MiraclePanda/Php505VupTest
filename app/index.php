@@ -1,7 +1,7 @@
 <?
 /*
- * å•†å“æ¤œç´¢ç”»é¢
- *   ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿: keyword, category, page, msg
+ * ¾¦ÉÊ¸¡º÷²èÌÌ
+ *   ¥Ñ¥é¥á¡¼¥¿: keyword, category, page, msg
  */
 require_once("include/config.inc");
 require_once("include/db.inc");
@@ -15,10 +15,10 @@ if (!isset($page) || !ereg("^[0-9]+$", $page) || $page < 1) {
 }
 $categories = get_categories();
 
-// æ¤œç´¢æ¡ä»¶ã®çµ„ã¿ç«‹ã¦
+// ¸¡º÷¾ò·ï¤ÎÁÈ¤ßÎ©¤Æ
 $where = "1=1";
 if ($keyword != "") {
-    // å…¨è§’ã‚¹ãƒšãƒ¼ã‚¹ã‚‚åŒºåˆ‡ã‚Šã¨ã—ã¦æ‰±ã†
+    // Á´³Ñ¥¹¥Ú¡¼¥¹¤â¶èÀÚ¤ê¤È¤·¤Æ°·¤¦
     $keyword = trim(mb_convert_kana($keyword, "s"));
     $words = split(" ", $keyword);
     for ($i = 0; $i < count($words); $i++) {
@@ -32,18 +32,18 @@ if ($category != 0) {
     $where .= " AND p.category_id = " . $category;
 }
 
-// ä»¶æ•°
+// ·ï¿ô
 $result = db_query("SELECT COUNT(*) FROM products p WHERE " . $where);
-$total = mysql_result($result, 0);
+$total = sqlite_fetch_single($result);
 $max_page = ceil($total / PAGE_SIZE);
 $offset = ($page - 1) * PAGE_SIZE;
 
-// ä¸€è¦§
-$sql = "SELECT p.*, c.name AS category_name"
+// °ìÍ÷
+$sql = "SELECT p.id AS id, p.code AS code, p.name AS name, p.price AS price, p.stock AS stock, c.name AS category_name"
      . " FROM products p LEFT JOIN categories c ON p.category_id = c.id"
      . " WHERE " . $where
      . " ORDER BY p.code"
-     . " LIMIT " . $offset . ", " . PAGE_SIZE;
+     . " LIMIT " . PAGE_SIZE . " OFFSET " . $offset;
 $result = db_query($sql);
 
 $query_string = "keyword=" . urlencode(stripslashes($keyword)) . "&category=" . $category;
@@ -51,28 +51,28 @@ $query_string = "keyword=" . urlencode(stripslashes($keyword)) . "&category=" . 
 include("include/header.inc");
 ?>
 <? if ($msg == "updated") { ?>
-<p class="msg">å•†å“æƒ…å ±ã‚’æ›´æ–°ã—ã¾ã—ãŸã€‚</p>
+<p class="msg">¾¦ÉÊ¾ðÊó¤ò¹¹¿·¤·¤Þ¤·¤¿¡£</p>
 <? } ?>
 
 <form method="get" action="<?=$PHP_SELF?>">
-ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰: <input type="text" name="keyword" value="<?=h(stripslashes($keyword))?>" size="30">
-ã‚«ãƒ†ã‚´ãƒª:
+¥­¡¼¥ï¡¼¥É: <input type="text" name="keyword" value="<?=h(stripslashes($keyword))?>" size="30">
+¥«¥Æ¥´¥ê:
 <select name="category">
-<option value="">ã™ã¹ã¦</option>
+<option value="">¤¹¤Ù¤Æ</option>
 <?=category_options($categories, $category)?>
 </select>
-<input type="submit" value="æ¤œç´¢">
+<input type="submit" value="¸¡º÷">
 </form>
 
 <? if ($total == 0) { ?>
-<p>ã€Œ<?=stripslashes($keyword)?>ã€ã«è©²å½“ã™ã‚‹å•†å“ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚</p>
+<p>¡Ö<?=stripslashes($keyword)?>¡×¤Ë³ºÅö¤¹¤ë¾¦ÉÊ¤Ï¤¢¤ê¤Þ¤»¤ó¡£</p>
 <? } else { ?>
-<p><?=$total?> ä»¶ä¸­ <?=$offset + 1?>ï½ž<?=min($offset + PAGE_SIZE, $total)?> ä»¶ã‚’è¡¨ç¤º</p>
+<p><?=$total?> ·ïÃæ <?=$offset + 1?>¡Á<?=min($offset + PAGE_SIZE, $total)?> ·ï¤òÉ½¼¨</p>
 <table class="list">
 <tr>
-<th>è¨˜å·</th><th>å•†å“ã‚³ãƒ¼ãƒ‰</th><th>å•†å“å</th><th>ã‚«ãƒ†ã‚´ãƒª</th><th>ä¾¡æ ¼</th><th>åœ¨åº«</th><? if (is_login()) { ?><th>æ“ä½œ</th><? } ?>
+<th>µ­¹æ</th><th>¾¦ÉÊ¥³¡¼¥É</th><th>¾¦ÉÊÌ¾</th><th>¥«¥Æ¥´¥ê</th><th>²Á³Ê</th><th>ºß¸Ë</th><? if (is_login()) { ?><th>Áàºî</th><? } ?>
 </tr>
-<? while ($row = mysql_fetch_array($result)) { format_price(&$row); ?>
+<? while ($row = sqlite_fetch_array($result)) { format_price(&$row); ?>
 <tr>
 <td><?=code_prefix($row['code'])?></td>
 <td><?=h($row['code'])?></td>
@@ -80,15 +80,15 @@ include("include/header.inc");
 <td><?=h($row['category_name'])?></td>
 <td align="right"><?=$row['price_disp']?></td>
 <td align="right"><?=$row['stock']?></td>
-<? if (is_login()) { ?><td><a href="edit.php?id=<?=$row['id']?>">ç·¨é›†</a></td><? } ?>
+<? if (is_login()) { ?><td><a href="edit.php?id=<?=$row['id']?>">ÊÔ½¸</a></td><? } ?>
 </tr>
 <? } ?>
 </table>
 
 <div class="pager">
-<? if ($page > 1) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; å‰ã¸</a><? } ?>
+<? if ($page > 1) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; Á°¤Ø</a><? } ?>
 <?=$page?> / <?=$max_page?>
-<? if ($page < $max_page) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page + 1?>">æ¬¡ã¸ &gt;&gt;</a><? } ?>
+<? if ($page < $max_page) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page + 1?>">¼¡¤Ø &gt;&gt;</a><? } ?>
 </div>
 <? } ?>
 <?

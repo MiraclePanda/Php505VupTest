@@ -1,34 +1,26 @@
--- ÂïÜÂìÅÁÆ°ÁêÜ„Ç∑„Çπ„ÉÜ„É† „Çπ„Ç≠„Éº„ÉûÔºàMySQL 4.1 ÂΩìÊôÇ„ÅÆÊõ∏„ÅçÊñπÔºâ
-SET NAMES utf8;
-
-DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS users;
+-- æ¶… ¥…Õ˝•∑•π•∆•‡ •π•≠°º•ﬁ° SQLite 2.8 / PHP 5.0 §Œ sqlite ≥»ƒ•°À
+-- À‹»÷§œ Symfoware°£∏°æ⁄Õ—§À SQLite §«¬ÂÕ—§∑§∆§§§Î
+--  ∏ª˙•≥°º•…: EUC-JP° •–•§•»ŒÛ§Œ§ﬁ§ﬁ≥ «º°À
 
 CREATE TABLE categories (
-  id int(11) NOT NULL auto_increment,
-  name varchar(50) NOT NULL default '',
-  PRIMARY KEY (id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(50) NOT NULL DEFAULT ''
+);
 
 CREATE TABLE products (
-  id int(11) NOT NULL auto_increment,
-  code varchar(10) NOT NULL default '',
-  name varchar(100) NOT NULL default '',
-  category_id int(11) NOT NULL default '0',
-  price int(11) NOT NULL default '0',
-  stock int(11) NOT NULL default '0',
-  updated_at datetime default NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY code (code),
-  KEY category_id (category_id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  id INTEGER PRIMARY KEY,
+  code VARCHAR(10) NOT NULL UNIQUE,
+  name VARCHAR(100) NOT NULL DEFAULT '',
+  category_id INTEGER NOT NULL DEFAULT 0,
+  price INTEGER NOT NULL DEFAULT 0,
+  stock INTEGER NOT NULL DEFAULT 0,
+  updated_at VARCHAR(19)
+);
+CREATE INDEX products_category_id ON products (category_id);
 
 CREATE TABLE users (
-  id int(11) NOT NULL auto_increment,
-  login_id varchar(20) NOT NULL default '',
-  password varchar(32) NOT NULL default '',
-  name varchar(50) NOT NULL default '',
-  PRIMARY KEY (id),
-  UNIQUE KEY login_id (login_id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  id INTEGER PRIMARY KEY,
+  login_id VARCHAR(20) NOT NULL UNIQUE,
+  password VARCHAR(32) NOT NULL DEFAULT '',
+  name VARCHAR(50) NOT NULL DEFAULT ''
+);

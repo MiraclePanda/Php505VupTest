@@ -1,6 +1,6 @@
 <?php
 /*
- * å•†å“ã‚¯ãƒ©ã‚¹
+ * ¾¦ÉÊ¥¯¥é¥¹
  */
 class Product
 {
@@ -25,14 +25,14 @@ class Product
         }
     }
 
-    // Product::find($id) ã§å‘¼ã³å‡ºã™
+    // Product::find($id) ¤Ç¸Æ¤Ó½Ð¤¹
     function find($id)
     {
         $result = db_query("SELECT * FROM products WHERE id = " . $id);
-        if (mysql_num_rows($result) == 0) {
+        if (sqlite_num_rows($result) == 0) {
             return false;
         }
-        return new Product(mysql_fetch_assoc($result));
+        return new Product(sqlite_fetch_array($result, SQLITE_ASSOC));
     }
 
     function validate($categories)
@@ -40,37 +40,39 @@ class Product
         $this->errors = array();
 
         if (!ereg("^[A-Z]{2}-[0-9]{4}$", $this->code)) {
-            $this->errors[] = "å•†å“ã‚³ãƒ¼ãƒ‰ã¯ã€ŒAA-9999ã€ã®å½¢å¼ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚";
+            $this->errors[] = "¾¦ÉÊ¥³¡¼¥É¤Ï¡ÖAA-9999¡×¤Î·Á¼°¤ÇÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£";
         }
         if ($this->name == "") {
-            $this->errors[] = "å•†å“åã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚";
+            $this->errors[] = "¾¦ÉÊÌ¾¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£";
         } elseif (strlen($this->name) > 100) {
-            $this->errors[] = "å•†å“åãŒé•·ã™ãŽã¾ã™ã€‚";
+            $this->errors[] = "¾¦ÉÊÌ¾¤¬Ä¹¤¹¤®¤Þ¤¹¡£";
         }
         if (!array_key_exists($this->category_id, $categories)) {
-            $this->errors[] = "ã‚«ãƒ†ã‚´ãƒªã‚’é¸æŠžã—ã¦ãã ã•ã„ã€‚";
+            $this->errors[] = "¥«¥Æ¥´¥ê¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤¡£";
         }
         if (!ereg("^[0-9]+$", $this->price)) {
-            $this->errors[] = "ä¾¡æ ¼ã¯åŠè§’æ•°å­—ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚";
+            $this->errors[] = "²Á³Ê¤ÏÈ¾³Ñ¿ô»ú¤ÇÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£";
         }
         if (!ereg("^[0-9]+$", $this->stock)) {
-            $this->errors[] = "åœ¨åº«æ•°ã¯åŠè§’æ•°å­—ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚";
+            $this->errors[] = "ºß¸Ë¿ô¤ÏÈ¾³Ñ¿ô»ú¤ÇÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£";
         }
         return count($this->errors) == 0;
     }
 
     function save()
     {
+        global $conn;
+
         $sql = "UPDATE products SET"
              . " code = '$this->code',"
              . " name = '$this->name',"
              . " category_id = $this->category_id,"
              . " price = $this->price,"
              . " stock = $this->stock,"
-             . " updated_at = NOW()"
+             . " updated_at = '" . date("Y-m-d H:i:s") . "'"
              . " WHERE id = $this->id";
         db_query($sql);
-        return mysql_affected_rows();
+        return sqlite_changes($conn);
     }
 }
 ?>

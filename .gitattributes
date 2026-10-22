@@ -1,0 +1,4 @@
+# app/ と db/init/ は EUC-JP。差分を読むには次を一度実行する:
+#   git config diff.eucjp.textconv "iconv -f EUC-JP -t UTF-8"
+app/** diff=eucjp
+db/init/*.sql diff=eucjp

@@ -1,14 +1,13 @@
 <?php
 /*
- * DBã‚¢ã‚¯ã‚»ã‚¹å…±é€šé–¢æ•°
+ * DB¥¢¥¯¥»¥¹¶¦ÄÌ´Ø¿ô¡ÊSQLite¡Ë
  */
 
 function db_connect()
 {
-    global $DB_HOST, $DB_USER, $DB_PASS, $DB_NAME;
+    global $DB_FILE;
 
-    $conn = @mysql_connect($DB_HOST, $DB_USER, $DB_PASS) or die("DBæŽ¥ç¶šã‚¨ãƒ©ãƒ¼: " . mysql_error());
-    mysql_select_db($DB_NAME, $conn) or die("DBé¸æŠžã‚¨ãƒ©ãƒ¼: " . mysql_error());
+    $conn = @sqlite_open($DB_FILE, 0666, $sqlite_error) or die("DBÀÜÂ³¥¨¥é¡¼: " . $sqlite_error);
     return $conn;
 }
 
@@ -16,9 +15,9 @@ function db_query($sql)
 {
     global $conn;
 
-    $result = mysql_query($sql, $conn);
+    $result = @sqlite_query($conn, $sql);
     if (!$result) {
-        die("SQLã‚¨ãƒ©ãƒ¼: " . mysql_error() . "<br>" . $sql);
+        die("SQL¥¨¥é¡¼: " . sqlite_error_string(sqlite_last_error($conn)) . "<br>" . $sql);
     }
     return $result;
 }

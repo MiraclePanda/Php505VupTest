@@ -1,6 +1,6 @@
 <?
 /*
- * ãƒ­ã‚°ã‚¤ãƒ³ç”»é¢
+ * ¥í¥°¥¤¥ó²èÌÌ
  */
 require_once("include/config.inc");
 require_once("include/db.inc");
@@ -14,28 +14,28 @@ if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
          . " WHERE login_id = '" . $login_id . "'"
          . " AND password = '" . md5($password) . "'";
     $result = db_query($sql);
-    if (mysql_num_rows($result) == 1) {
-        $row = mysql_fetch_assoc($result);
+    if (sqlite_num_rows($result) == 1) {
+        $row = sqlite_fetch_array($result, SQLITE_ASSOC);
         session_register("login_user");
         $login_user = $row['name'];
         header("Location: index.php");
         exit;
     }
-    $error = "ãƒ­ã‚°ã‚¤ãƒ³IDã¾ãŸã¯ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒé•ã„ã¾ã™ã€‚";
+    $error = "¥í¥°¥¤¥óID¤Þ¤¿¤Ï¥Ñ¥¹¥ï¡¼¥É¤¬°ã¤¤¤Þ¤¹¡£";
 }
 
 include("include/header.inc");
 ?>
-<h2>ãƒ­ã‚°ã‚¤ãƒ³</h2>
+<h2>¥í¥°¥¤¥ó</h2>
 <? if ($error) { ?>
 <p class="error"><?=$error?></p>
 <? } ?>
 <form method="post" action="login.php">
 <table>
-<tr><th>ãƒ­ã‚°ã‚¤ãƒ³ID</th><td><input type="text" name="login_id" value="<?=h(stripslashes($login_id))?>"></td></tr>
-<tr><th>ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰</th><td><input type="password" name="password"></td></tr>
+<tr><th>¥í¥°¥¤¥óID</th><td><input type="text" name="login_id" value="<?=h(stripslashes($login_id))?>"></td></tr>
+<tr><th>¥Ñ¥¹¥ï¡¼¥É</th><td><input type="password" name="password"></td></tr>
 </table>
-<input type="submit" value="ãƒ­ã‚°ã‚¤ãƒ³">
+<input type="submit" value="¥í¥°¥¤¥ó">
 </form>
 <?
 include("include/footer.inc");

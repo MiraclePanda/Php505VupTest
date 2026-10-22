@@ -1,26 +1,23 @@
--- åˆæœŸãƒ‡ãƒ¼ã‚¿ï¼ˆç‰¹æ€§ãƒ†ã‚¹ãƒˆã®å‰æã«ãªã‚‹ãŸã‚ã€å¤‰æ›´ã—ãŸã‚‰ã‚´ãƒ¼ãƒ«ãƒ‡ãƒ³ã‚’å–ã‚Šç›´ã™ã“ã¨ï¼‰
-SET NAMES utf8;
+-- ½é´ü¥Ç¡¼¥¿¡ÊÆÃÀ­¥Æ¥¹¥È¤ÎÁ°Äó¤Ë¤Ê¤ë¤¿¤á¡¢ÊÑ¹¹¤·¤¿¤é¥´¡¼¥ë¥Ç¥ó¤ò¼è¤êÄ¾¤¹¤³¤È¡Ë
+-- SQLite 2 ¤ÏÊ£¿ô¹Ô VALUES ¤ËÂĞ±ş¤·¤Ê¤¤¤¿¤á 1 ¹Ô¤º¤Ä INSERT ¤¹¤ë
 
-INSERT INTO categories (id, name) VALUES
-  (1, 'æ–‡æˆ¿å…·'),
-  (2, 'é£Ÿå“'),
-  (3, 'æ—¥ç”¨å“'),
-  (4, 'æ›¸ç±');
+INSERT INTO categories (id, name) VALUES (1, 'Ê¸Ë¼¶ñ');
+INSERT INTO categories (id, name) VALUES (2, '¿©ÉÊ');
+INSERT INTO categories (id, name) VALUES (3, 'ÆüÍÑÉÊ');
+INSERT INTO categories (id, name) VALUES (4, '½ñÀÒ');
 
-INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES
-  (1,  'ST-0001', 'ãƒœãƒ¼ãƒ«ãƒšãƒ³ é»’ 0.5mm',        1,   120, 250, '2005-04-01 10:00:00'),
-  (2,  'ST-0002', 'ãƒœãƒ¼ãƒ«ãƒšãƒ³ èµ¤ 0.5mm',        1,   120, 180, '2005-04-01 10:00:00'),
-  (3,  'ST-0003', 'ã‚­ãƒ£ãƒ³ãƒ‘ã‚¹ãƒãƒ¼ãƒˆ A4 5å†Šçµ„',  1,   580,  40, '2005-04-01 10:00:00'),
-  (4,  'ST-0004', 'B&B ãƒãƒ¼ãƒˆ B5',              1,   150,  75, '2005-05-10 15:30:00'),
-  (5,  'FD-0001', 'å¤©ç„¶æ°´ 2L',                  2,   198, 600, '2005-06-01 09:00:00'),
-  (6,  'FD-0002', 'ç·‘èŒ¶ 500ml',                 2,   147, 480, '2005-06-01 09:00:00'),
-  (7,  'FD-0003', '<ç‰¹é¸> ç…é¤… è©°ã‚åˆã‚ã›',     2,  1050,  12, '2005-07-15 11:20:00'),
-  (8,  'DL-0001', 'ãƒ†ã‚£ãƒƒã‚·ãƒ¥ãƒšãƒ¼ãƒ‘ãƒ¼ 5ç®±',     3,   298, 300, '2005-03-20 13:00:00'),
-  (9,  'DL-0002', 'é£Ÿå™¨ç”¨æ´—å‰¤ è©°ã‚æ›¿ãˆ',        3,   258,  90, '2005-03-20 13:00:00'),
-  (10, 'BK-0001', 'Let''s è‹±ä¼šè©± å…¥é–€',         4,  1680,   8, '2005-08-01 17:45:00'),
-  (11, 'BK-0002', 'PHP5 å¾¹åº•æ”»ç•¥',              4,  3360,   5, '2005-08-01 17:45:00'),
-  (12, 'BK-0003', 'MySQL 4.1 ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹',     4,  4200,   0, '2005-08-01 17:45:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (1,  'ST-0001', '¥Ü¡¼¥ë¥Ú¥ó ¹õ 0.5mm',       1,  120, 250, '2005-04-01 10:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (2,  'ST-0002', '¥Ü¡¼¥ë¥Ú¥ó ÀÖ 0.5mm',       1,  120, 180, '2005-04-01 10:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (3,  'ST-0003', '¥­¥ã¥ó¥Ñ¥¹¥Î¡¼¥È A4 5ºıÁÈ', 1,  580,  40, '2005-04-01 10:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (4,  'ST-0004', 'B&B ¥Î¡¼¥È B5',             1,  150,  75, '2005-05-10 15:30:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (5,  'FD-0001', 'Å·Á³¿å 2L',                 2,  198, 600, '2005-06-01 09:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (6,  'FD-0002', 'ÎĞÃã 500ml',                2,  147, 480, '2005-06-01 09:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (7,  'FD-0003', '<ÆÃÁª> ÀùÌß µÍ¤á¹ç¤ï¤»',    2, 1050,  12, '2005-07-15 11:20:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (8,  'DL-0001', '¥Æ¥£¥Ã¥·¥å¥Ú¡¼¥Ñ¡¼ 5È¢',    3,  298, 300, '2005-03-20 13:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (9,  'DL-0002', '¿©´ïÍÑÀöºŞ µÍ¤áÂØ¤¨',       3,  258,  90, '2005-03-20 13:00:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (10, 'BK-0001', 'Let''s ±Ñ²ñÏÃ ÆşÌç',        4, 1680,   8, '2005-08-01 17:45:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (11, 'BK-0002', 'PHP5 Å°Äì¹¶Î¬',             4, 3360,   5, '2005-08-01 17:45:00');
+INSERT INTO products (id, code, name, category_id, price, stock, updated_at) VALUES (12, 'BK-0003', 'É½·×»» ¥½¥Õ¥È ³èÍÑ½Ñ',      4, 4200,   0, '2005-08-01 17:45:00');
 
--- ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã¯ MD5('admin123')
-INSERT INTO users (id, login_id, password, name) VALUES
-  (1, 'admin', '0192023a7bbd73250516f069df18b500', 'ç®¡ç†è€…');
+-- ¥Ñ¥¹¥ï¡¼¥É¤Ï MD5('admin123')
+INSERT INTO users (id, login_id, password, name) VALUES (1, 'admin', '0192023a7bbd73250516f069df18b500', '´ÉÍı¼Ô');

@@ -1,6 +1,6 @@
 <?php
 /*
- * å…±é€šé–¢æ•°
+ * ¶¦ÄÌ´Ø¿ô
  */
 
 function h($str)
@@ -8,32 +8,32 @@ function h($str)
     return htmlspecialchars($str);
 }
 
-// ä¾¡æ ¼ã‚’è¡¨ç¤ºç”¨ã«æ•´å½¢ã—ã¦ $row['price_disp'] ã«å…¥ã‚Œã‚‹
-// â€»å‘¼ã³å‡ºã—å´ã§å‚ç…§æ¸¡ã—ã™ã‚‹ã“ã¨ format_price(&$row)
+// ²Á³Ê¤òÉ½¼¨ÍÑ¤ËÀ°·Á¤·¤Æ $row['price_disp'] ¤ËÆş¤ì¤ë
+// ¢¨¸Æ¤Ó½Ğ¤·Â¦¤Ç»²¾ÈÅÏ¤·¤¹¤ë¤³¤È format_price(&$row)
 function format_price($row)
 {
-    $row['price_disp'] = number_format($row['price']) . "å††";
+    $row['price_disp'] = number_format($row['price']) . "±ß";
 }
 
-// å•†å“ã‚³ãƒ¼ãƒ‰ã®å…ˆé ­2æ–‡å­—ï¼ˆåˆ†é¡è¨˜å·ï¼‰
+// ¾¦ÉÊ¥³¡¼¥É¤ÎÀèÆ¬2Ê¸»ú¡ÊÊ¬Îàµ­¹æ¡Ë
 function code_prefix($code)
 {
     return $code{0} . $code{1};
 }
 
-// ã‚«ãƒ†ã‚´ãƒªä¸€è¦§ã‚’å–å¾—ï¼ˆåå‰é †ï¼‰
+// ¥«¥Æ¥´¥ê°ìÍ÷¤ò¼èÆÀ¡ÊÌ¾Á°½ç¡Ë
 function get_categories()
 {
     $cats = array();
     $result = db_query("SELECT id, name FROM categories");
-    while ($row = mysql_fetch_assoc($result)) {
+    while ($row = sqlite_fetch_array($result, SQLITE_ASSOC)) {
         $cats[$row['id']] = $row['name'];
     }
     uasort($cats, create_function('$a, $b', 'return strcmp($a, $b);'));
     return $cats;
 }
 
-// <option>ã‚¿ã‚°ã‚’ç”Ÿæˆ
+// <option>¥¿¥°¤òÀ¸À®
 function category_options($cats, $selected)
 {
     $html = "";
@@ -45,7 +45,7 @@ function category_options($cats, $selected)
     return $html;
 }
 
-// ãƒ­ã‚°ã‚¤ãƒ³ãƒã‚§ãƒƒã‚¯
+// ¥í¥°¥¤¥ó¥Á¥§¥Ã¥¯
 function is_login()
 {
     return session_is_registered("login_user");

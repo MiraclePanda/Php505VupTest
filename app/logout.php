@@ -1,6 +1,6 @@
 <?
 /*
- * ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ
+ * ¥í¥°¥¢¥¦¥È
  */
 session_start();
 session_unregister("login_user");
