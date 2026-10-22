@@ -1,4 +1,4 @@
-# 新環境: PHP 8.5 + Apache 2.4 + SQLite 3
+# 新環境: PHP 8.5 + Apache 2.4 + ODBC + SQLite 3（本番 Symfoware の代用）
 #   docker compose -f docker/compose.modern.yml up -d --build
 #   http://localhost:8085/
 name: php505-modern

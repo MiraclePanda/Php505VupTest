@@ -34,7 +34,8 @@ if ($category != 0) {
 
 // ·ï¿ô
 $result = db_query("SELECT COUNT(*) FROM products p WHERE " . $where);
-$total = sqlite_fetch_single($result);
+odbc_fetch_row($result);
+$total = odbc_result($result, 1);
 $max_page = ceil($total / PAGE_SIZE);
 $offset = ($page - 1) * PAGE_SIZE;
 
@@ -72,7 +73,7 @@ include("include/header.inc");
 <tr>
 <th>µ­¹æ</th><th>¾¦ÉÊ¥³¡¼¥É</th><th>¾¦ÉÊÌ¾</th><th>¥«¥Æ¥´¥ê</th><th>²Á³Ê</th><th>ºß¸Ë</th><? if (is_login()) { ?><th>Áàºî</th><? } ?>
 </tr>
-<? while ($row = sqlite_fetch_array($result)) { format_price(&$row); ?>
+<? while ($row = odbc_fetch_array($result)) { format_price(&$row); ?>
 <tr>
 <td><?=code_prefix($row['code'])?></td>
 <td><?=h($row['code'])?></td>

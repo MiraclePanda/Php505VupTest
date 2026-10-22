@@ -26,8 +26,8 @@ function get_categories()
 {
     $cats = array();
     $result = db_query("SELECT id, name FROM categories");
-    while ($row = sqlite_fetch_array($result, SQLITE_ASSOC)) {
-        $cats[$row['id']] = $row['name'];
+    while (odbc_fetch_row($result)) {
+        $cats[odbc_result($result, "id")] = odbc_result($result, "name");
     }
     uasort($cats, create_function('$a, $b', 'return strcmp($a, $b);'));
     return $cats;

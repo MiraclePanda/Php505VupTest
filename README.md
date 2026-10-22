@@ -9,7 +9,7 @@ PHP 5.0.5 で作られたアプリケーションを、Claude Code を使って 
 ## サンプルアプリ（`app/`）
 
 2005 年頃の典型的な書き方で作った小さな商品管理システム。文字コードは EUC-JP。
-本番の想定 DB は Symfoware だが、検証用に SQLite で代用している。
+本番の想定 DB は Symfoware（ODBC 接続）で、検証では SQLite の ODBC ドライバで代用している。
 
 EUC-JP のファイルの差分を読むには、一度だけ次を実行する。
 
@@ -26,10 +26,10 @@ git config diff.eucjp.textconv "iconv -f EUC-JP -t UTF-8"
 ## 使い方
 
 ```sh
-# 旧環境: PHP 5.0.5 + Apache 2.0 + SQLite 2 → http://localhost:8050/
+# 旧環境: PHP 5.0.5 + Apache 2.0 + ODBC + SQLite 2 → http://localhost:8050/
 docker compose -f docker/compose.legacy.yml up -d --build
 
-# 新環境: PHP 8.5 + Apache 2.4 + SQLite 3 → http://localhost:8085/
+# 新環境: PHP 8.5 + Apache 2.4 + ODBC + SQLite 3 → http://localhost:8085/
 docker compose -f docker/compose.modern.yml up -d --build
 
 # 特性テスト

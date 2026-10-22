@@ -47,15 +47,17 @@
 | E05 | カテゴリの並び順が EUC-JP のバイト順（`strcmp`） | functions.inc | 挙動 | UTF-8 化すると並び順が変わる |
 | E06 | ソースの日本語文字列とコメント | 全ファイル | 作業 | エディタやエージェントが UTF-8 として読むと文字化けする。編集時に文字コードを壊さないこと |
 
-## DB アクセス（本番は Symfoware、検証では SQLite で代用）
+## DB アクセス（本番は Symfoware に ODBC で接続。検証では SQLite の ODBC ドライバで代用）
 
 | # | 内容 | 場所 | 種別 | 移行先での扱い |
 |---|------|------|------|----------------|
-| T22 | `sqlite_*` 関数（`sqlite_open`, `sqlite_query`, `sqlite_fetch_array`, `sqlite_fetch_single` など） | 全体 | 致命 | 5.4 で削除。PDO_SQLITE（推奨）または SQLite3 クラス |
+| T22 | `odbc_*` 関数による DB アクセス | 全体 | なし | `odbc_*` は PHP 8.5 にも残っている（ビルド時に `--with-unixODBC` が必要）。そのまま使うか、PDO_ODBC に移すかを選ぶ。プリペアドステートメント化（`odbc_prepare` / `odbc_execute` または PDO）は必要 |
 | T23 | `@` でのエラー抑制と `or die()`、エラー時に SQL を画面に出力 | db.inc | 安全 | 例外処理とログ出力へ |
 | T24 | 文字列連結による SQL 組み立て（SQL インジェクション） | index.php（`category`, `page` 経由も含む）, login.php, Product.class.php | 安全 | プリペアドステートメント |
-| T25 | DB ファイルが SQLite 2 形式 | /var/www/data/shop.db | DB | SQLite 3 では開けない。旧環境でダンプし、SQLite 3 に投入し直す（新環境の `db/init_modern.php` は、無変換で移した状態を再現している） |
-| T26 | 文字列を EUC-JP のバイト列のまま格納 | DB 全体 | DB | SQLite 3 は TEXT を UTF-8 とみなす。EUC-JP のままにするか、データ移行時に UTF-8 へ変換するかを E01 と合わせて決める |
+| T25 | DB の世代が変わる（検証では SQLite 2 → SQLite 3。データファイルに互換性がない） | /var/www/data/shop.db | DB | 旧 DB からデータを抜き出して新 DB に投入し直す。本番では Symfoware のバージョンや移行先 DB 製品に読み替える |
+| T26 | 文字列を EUC-JP のバイト列のまま格納 | DB 全体 | DB | SQLite 3 は TEXT を UTF-8 とみなすため、EUC-JP のままだと **LIKE 検索の結果が狂う**（取りこぼしと誤ヒットの両方が起きることを確認済み。特性テスト 02, 03, 20 などで差分になる）。DB 側は UTF-8 にして、アプリとの境界で変換する案が有力。E01 と合わせて決める |
+| T27 | `odbc_result($result, 1)` など、列番号や列名の大文字小文字が ODBC ドライバに依存 | index.php, functions.inc | DB | ドライバを変えると列名の扱いが変わることがある。特性テストで確認 |
+| T28 | ODBC の DSN 定義（`/etc/odbc.ini`）がアプリの外にある | 実行環境 | 環境 | 移行先サーバの DSN 設定とドライバのインストールを移行手順に含める |
 
 ## セキュリティ（互換性とは別枠で判断する）
 

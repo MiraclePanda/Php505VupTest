@@ -1,4 +1,5 @@
-# PHP 5.0.5 + Apache 2.0 (mod_php) + SQLite 2（PHP 同梱）の当時相当の実行環境
+# PHP 5.0.5 + Apache 2.0 (mod_php) + unixODBC + SQLite 2 ODBC ドライバの当時相当の実行環境
+#   本番は Symfoware に ODBC で接続している。検証では SQLite の ODBC ドライバで代用する。
 #   2005年当時の典型構成を再現するため、Debian 4.0 (etch) 上で
 #   Apache 2.0.65 と PHP 5.0.5 をソースからビルドする。
 FROM debian/eol:etch
@@ -6,6 +7,7 @@ FROM debian/eol:etch
 RUN apt-get update \
  && apt-get install -y --force-yes \
       build-essential libxml2-dev zlib1g-dev \
+      unixodbc unixodbc-dev libsqliteodbc \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ソースは Docker デーモン側で取得する（etch の wget は現在の TLS に対応しないため）
@@ -26,6 +28,7 @@ RUN cd /usr/src && mkdir php && tar xzf php.tar.gz -C php --strip-components=1 \
       --prefix=/usr/local/php5 \
       --with-apxs2=/usr/local/apache2/bin/apxs \
       --with-config-file-path=/usr/local/php5/lib \
+      --with-unixODBC=/usr \
       --enable-mbstring \
       --with-zlib \
       --without-pear \
@@ -33,6 +36,11 @@ RUN cd /usr/src && mkdir php && tar xzf php.tar.gz -C php --strip-components=1 \
  && cd /usr/src && rm -rf php php.tar.gz
 
 COPY php.ini /usr/local/php5/lib/php.ini
+# ODBC: SQLite 2 ドライバを登録し、データソース "shop" を定義する
+RUN DRV=$(find /usr/lib -name 'libsqliteodbc*.so' | head -1) \
+ && test -n "$DRV" \
+ && printf '[SQLite]\nDescription=SQLite 2 ODBC Driver\nDriver=%s\n' "$DRV" > /etc/odbcinst.ini \
+ && printf '[shop]\nDriver=SQLite\nDatabase=/var/www/data/shop.db\n' > /etc/odbc.ini
 COPY httpd-app.conf /usr/local/apache2/conf/httpd-app.conf
 RUN sed -i \
       -e 's/^Group #-1/Group nogroup/' \

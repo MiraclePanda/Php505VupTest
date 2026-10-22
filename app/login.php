@@ -14,10 +14,9 @@ if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
          . " WHERE login_id = '" . $login_id . "'"
          . " AND password = '" . md5($password) . "'";
     $result = db_query($sql);
-    if (sqlite_num_rows($result) == 1) {
-        $row = sqlite_fetch_array($result, SQLITE_ASSOC);
+    if (odbc_fetch_row($result)) {
         session_register("login_user");
-        $login_user = $row['name'];
+        $login_user = odbc_result($result, "name");
         header("Location: index.php");
         exit;
     }

@@ -7,9 +7,9 @@ PHP 5.0.5 で作られたアプリを PHP 8.5 へ移行するプロセスを検�
 
 - `app/` 移行対象のアプリ（PHP 5.0.5 時代の書き方）。`include/*.inc` も PHP ファイルとして扱う
 - `app/` と `db/init/` は **EUC-JP**。読むときは `iconv -f EUC-JP -t UTF-8` を通し、書き換えるときも EUC-JP で保存すること（UTF-8 化は `docs/upgrade-process.md` の 3D で行う）
-- `db/init/` スキーマと初期データ（特性テストの前提）。本番は Symfoware、検証では SQLite で代用
-- `db/init_legacy.php` / `db/init_modern.php` DB 初期化スクリプト（`scripts/reset-db.sh` から呼ぶ）
-- `docker/` 旧環境（PHP 5.0.5 / SQLite 2、:8050）と新環境（PHP 8.5 / SQLite 3、:8085）
+- `db/init/` スキーマと初期データ（特性テストの前提）。本番は Symfoware（ODBC 接続）、検証では SQLite の ODBC ドライバで代用（DSN 名は `shop`）
+- `db/init.php` DB 初期化スクリプト。旧新両方の PHP で動く（`scripts/reset-db.sh` から呼ぶ）
+- `docker/` 旧環境（PHP 5.0.5 / ODBC + SQLite 2、:8050）と新環境（PHP 8.5 / ODBC + SQLite 3、:8085）
 - `tests/characterization/` 特性テスト。`golden/` が旧環境の記録、`actual/` は実行結果（コミットしない）
 - `docs/sample-app-traps.md` 仕込んだ課題の解答キー。**移行エージェントの評価中は読まないこと**
 
