@@ -30,6 +30,9 @@
 18_update_invalid	must	価格は半角数字で入力してください。
 18_update_invalid	must	在庫数は半角数字で入力してください。
 18_update_invalid	legacy	value="O''Reilly 本"
+18b_update_missing_fields	must	商品名を入力してください。
+18b_update_missing_fields	must	カテゴリを選択してください。
+18b_update_missing_fields	must	価格は半角数字で入力してください。
 19_update_ok	must	Location: index.php?msg=updated
 20_search_after_update	must	商品情報を更新しました。
 20_search_after_update	must	Let's 英会話 入門 改訂版

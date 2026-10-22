@@ -62,6 +62,7 @@ req 17_edit_not_found        "/edit.php?id=999"
 req 18_update_invalid        "/edit.php?id=10" \
       --data-urlencode "code=bk-1" --data-urlencode "name=$(e 'O'\''Reilly 本')" \
       --data-urlencode "category_id=9" --data-urlencode "price=abc" --data-urlencode "stock="
+req 18b_update_missing_fields "/edit.php?id=10" --data-urlencode "code=BK-0001"
 req 19_update_ok             "/edit.php?id=10" \
       --data-urlencode "code=BK-0001" --data-urlencode "name=$(e 'Let'\''s 英会話 入門 改訂版')" \
       --data-urlencode "category_id=4" --data-urlencode "price=1980" --data-urlencode "stock=20"
