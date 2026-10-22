@@ -39,6 +39,8 @@ echo "### 3. 新環境の起動と DB 初期化"
 docker image inspect "$IMAGE" >/dev/null 2>&1 || scripts/upgrade/build-modern-image.sh "$IMAGE" >&2 || { echo "イメージを用意できない"; exit 1; }
 docker rm -f "$NAME" >/dev/null 2>&1
 MOUNTS=(-v "$ROOT/$APP_DIR:/var/www/app:ro" -v "$ROOT/db:/var/www/db:ro")
+# 新環境の php.ini はイメージに焼き込まれているが、変更をビルドし直さずに効かせるため上から重ねる（R14）
+[ -f docker/modern/php.ini ] && MOUNTS+=(-v "$ROOT/docker/modern/php.ini:/usr/local/etc/php/conf.d/zz-app.ini:ro")
 [ -d "$NEWAPP" ] && MOUNTS+=(-v "$ROOT/$NEWAPP:/var/www/newapp:ro")
 # start.sh の自動初期化を避けるため、Apache を直接起動する
 docker run -d --name "$NAME" -p "$PORT:80" "${MOUNTS[@]}" "$IMAGE" docker-php-entrypoint apache2-foreground >/dev/null

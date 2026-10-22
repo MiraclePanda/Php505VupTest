@@ -1,0 +1,63 @@
+# app2 の隠しテストの期待値（旧環境 PHP 5.0.5 + legacy-php.ini での応答を、コードと PHP 5.0 の実装から推定したもの）
+#   列: ケース名 <TAB> 種別 <TAB> 応答（UTF-8 に変換したもの）に含まれるべき文字列（re: / ! は tests/characterization/check-expectations.py と同じ）
+c01_list_top	must	全 7 件
+c01_list_top	must	view.php?id=1"
+c01_list_top	must	view.php?id=3"
+c01_list_top	must	!view.php?id=4"
+c01_list_top	must	ソフト更新のお知らせ
+c01_list_top	must	<td>2005/09/01</td>
+c01_list_top	must	<td>新着</td>
+c01_list_top	must	page=3">3</a>
+c01_list_top	must	re:^Content-Type: text/html; charset=Shift_JIS$
+c02_list_page2	must	新製品&quot;X&quot;発表会
+c02_list_page2	must	①会議室の利用ルール
+c02_list_page2	must	髙橋部長 着任のご挨拶
+c02_list_page2	must	<td>新着</td>
+c03_list_sort_title	must	view.php?id=1"
+c03_list_sort_title	must	!view.php?id=5"
+c03_list_sort_title	must	sort=title&page=2
+c04_search_katakana	must	全 2 件
+c04_search_katakana	must	value="ソフト"
+c04_search_katakana	must	<b>ソフト</b>更新のお知らせ
+c04_search_katakana	must	表計算<b>ソフト</b>講習会
+c05_search_ascii_t	legacy	全 2 件
+c06_search_dquote	must	全 1 件
+c06_search_dquote	must	value="&quot;X&quot;"
+c06_search_dquote	must	新製品<b>&quot;X&quot;</b>発表会
+c07_view_dquote	must	<h2>新製品&quot;X&quot;発表会</h2>
+c07_view_dquote	must	O'Reilly 社と共同で開催します。
+c07_view_dquote	must	タグ: 営業
+c07_view_dquote	must	re:^Content-Type: text/html; charset=Shift_JIS$
+c08_view_tags_5c	must	<h2>ソフト更新のお知らせ</h2>
+c08_view_tags_5c	must	タグ: ソフト / システム
+c08_view_tags_5c	must	表計算ソフトを更新します。<br />
+c08_view_tags_5c	must	C:\Program Files は変更しません。
+c09_view_not_found	must	Location: index.php
+c10_view_ibm_ext1	must	<h2>①会議室の利用ルール</h2>
+c10_view_ibm_ext1	must	!タグ:
+c11_view_ibm_ext2	must	<h2>髙橋部長 着任のご挨拶</h2>
+c12_view_bad_id	legacy	SQLエラー
+c13_list_msg_param	legacy	<p class="msg"><b>hi</b></p>
+c14_list_page_newline	must	view.php?id=1"
+c15_list_kw_array	legacy	全 0 件
+c15_list_kw_array	must	!Fatal error
+c16_export	must	re:^Content-Type: text/csv; charset=Shift_JIS$
+c16_export	must	3,ソフト更新のお知らせ,2005-08-10 15:00:00
+c16_export	must	4,新製品"X"発表会,2005-07-01 11:00:00
+c16_export	must	5,①会議室の利用ルール,2005-06-15 09:00:00
+c16_export	must	6,髙橋部長 着任のご挨拶,2005-06-01 09:00:00
+c17_delete_noauth	must	re:^HTTP/1\.[01] 401
+c17_delete_noauth	must	認証が必要です。
+c18_post_form	must	<h2>新規投稿</h2>
+c19_post_empty	must	件名を入力してください。
+c20_post_31chars	must	件名は30文字以内で入力してください。
+c20_post_31chars	must	value="あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほま"
+c21_post_30chars	must	を登録しました。
+c22_post_special	must	「ソフト&quot;テスト&quot;」を登録しました。
+c23_view_posted	must	<h2>ソフト&quot;テスト&quot;</h2>
+c23_view_posted	must	<div>a\b</div>
+c23_view_posted	must	タグ: ソフト / テスト
+c24_search_posted	must	全 1 件
+c25_list_after_post	must	全 9 件
+c26_delete_auth	must	Location: ../index.php
+c27_list_after_delete	must	全 8 件

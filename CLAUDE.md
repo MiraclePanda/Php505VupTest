@@ -7,7 +7,7 @@ PHP 5.0.5 で作られたアプリを PHP 8.5 へ移行するプロセスを検�
 
 - `app/` 移行対象のアプリ（PHP 5.0.5 時代の書き方）。`include/*.inc` も PHP ファイルとして扱う。**移行元なので書き換えない**
 - `newapp/` 移行結果。`newapp/app/` が PHP 8.5 で動くアプリ、`newapp/db/` が DB 移行スクリプト、`newapp/docs/` が棚卸し・差分の分類案・移行レポート
-- `app/`、`newapp/app/`、`db/init/` は **EUC-JP**。読むときは `iconv -f EUC-JP -t UTF-8` か `scripts/upgrade/eucjp.py cat` を通す。Edit / Write は UTF-8 以外を扱えないので、書き換えは `scripts/upgrade/eucjp.py replace` / `write` で行う（UTF-8 化は `docs/upgrade-process.md` の 3D で行う）
+- `app/`、`newapp/app/`、`db/init/` は**非 UTF-8**（文字コードは `.upgrade.env` の `SRC_ENCODING`。このサンプルは EUC-JP。`scripts/upgrade/eucjp.py detect app` で確かめられる）。読むときは `scripts/upgrade/utf8-mirror.sh` で作る `.work/utf8/` の写しを Read するか、`scripts/upgrade/eucjp.py cat` を通す。Edit / Write は UTF-8 以外を扱えないので、書き換えは `scripts/upgrade/eucjp.py replace` / `write` で行う（UTF-8 化は `docs/upgrade-process.md` の 3D で行う）
 - `db/init/` スキーマと初期データ（特性テストの前提）。本番は Symfoware（ODBC 接続）、検証では SQLite の ODBC ドライバで代用（DSN 名は `shop`）
 - `db/init.php` DB 初期化スクリプト。旧新両方の PHP で動く（`scripts/reset-db.sh` から呼ぶ）
 - `docker/` 旧環境（PHP 5.0.5 / ODBC + SQLite 2、:8050）と新環境（PHP 8.5 / ODBC + SQLite 3、:8085）
@@ -15,7 +15,7 @@ PHP 5.0.5 で作られたアプリを PHP 8.5 へ移行するプロセスを検�
 - `docs/sample-app-traps.md` 仕込んだ課題の解答キー。**移行エージェントの評価中は読まないこと**（フックで拒否される。採点は `upgrade-retro` スキルで行う）
 - `.claude/skills/php-upgrade/` 移行の手順（スキル）、ルールカタログ（`rules/`）、蓄積したノウハウ（`knowledge/`）
 - `.claude/agents/` 棚卸し・移行・検証・レビューの各エージェント
-- `scripts/upgrade/` 移行用の道具（EUC-JP 編集、構文チェック、検出、検証）
+- `scripts/upgrade/` 移行用の道具（非 UTF-8 ファイルの編集、構文チェック、検出、検証）
 
 ## 移行作業のルール
 
