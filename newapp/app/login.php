@@ -37,7 +37,7 @@ include("include/header.inc");
 <?php } ?>
 <form method="post" action="login.php">
 <table>
-<tr><th>ログインID</th><td><input type="text" name="login_id" value="<?=h(stripslashes($login_id))?>"></td></tr>
+<tr><th>ログインID</th><td><input type="text" name="login_id" value="<?=h($login_id)?>"></td></tr>
 <tr><th>パスワード</th><td><input type="password" name="password"></td></tr>
 </table>
 <input type="submit" value="ログイン">

@@ -55,7 +55,8 @@ $sql = "SELECT p.id AS id, p.code AS code, p.name AS name, p.price AS price, p.s
      . " LIMIT " . PAGE_SIZE . " OFFSET " . $offset;
 $result = db_query($sql);
 
-$query_string = "keyword=" . urlencode(stripslashes($keyword)) . "&category=" . $category;
+// 旧: magic_quotes_gpc（sybase）で '' になった入力を stripslashes で戻していた。入力は生の値になったので不要
+$query_string = "keyword=" . urlencode((string)$keyword) . "&category=" . $category;
 
 include("include/header.inc");
 ?>
@@ -64,7 +65,7 @@ include("include/header.inc");
 <?php } ?>
 
 <form method="get" action="<?=$_SERVER['PHP_SELF']?>">
-キーワード: <input type="text" name="keyword" value="<?=h(stripslashes($keyword))?>" size="30">
+キーワード: <input type="text" name="keyword" value="<?=h($keyword)?>" size="30">
 カテゴリ:
 <select name="category">
 <option value="">すべて</option>
@@ -74,7 +75,7 @@ include("include/header.inc");
 </form>
 
 <?php if ($total == 0) { ?>
-<p>「<?=stripslashes($keyword)?>」に該当する商品はありません。</p>
+<p>「<?=$keyword?>」に該当する商品はありません。</p>
 <?php } else { ?>
 <p><?=$total?> 件中 <?=$offset + 1?>〜<?=min($offset + PAGE_SIZE, $total)?> 件を表示</p>
 <table class="list">
