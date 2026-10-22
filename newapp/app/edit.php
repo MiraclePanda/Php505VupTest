@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * 商品編集画面
  *   GET  : id の商品を表示
@@ -44,13 +44,13 @@ include("include/header.inc");
 ?>
 <h2>商品編集</h2>
 
-<? if (count($errors) > 0) { ?>
+<?php if (count($errors) > 0) { ?>
 <ul class="error">
-<? foreach ($errors as $err) { ?>
+<?php foreach ($errors as $err) { ?>
 <li><?=$err?></li>
-<? } ?>
+<?php } ?>
 </ul>
-<? } ?>
+<?php } ?>
 
 <form method="post" action="edit.php?id=<?=$id?>">
 <table>
@@ -63,6 +63,6 @@ include("include/header.inc");
 <input type="submit" value="更新">
 <a href="index.php">一覧へ戻る</a>
 </form>
-<?
+<?php
 include("include/footer.inc");
 ?>

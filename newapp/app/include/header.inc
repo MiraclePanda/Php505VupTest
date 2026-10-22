@@ -14,10 +14,10 @@ table.list th { background: #ddeeff; }
 <body>
 <h1><a href="index.php"><?=APP_TITLE?></a></h1>
 <div class="nav">
-<? if (is_login()) { ?>
+<?php if (is_login()) { ?>
 ログイン中: <?=h($login_user)?> さん | <a href="logout.php">ログアウト</a>
-<? } else { ?>
+<?php } else { ?>
 <a href="login.php">ログイン</a>
-<? } ?>
+<?php } ?>
 </div>
 <hr>

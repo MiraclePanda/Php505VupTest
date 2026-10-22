@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * ログイン画面
  */
@@ -26,9 +26,9 @@ if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
 include("include/header.inc");
 ?>
 <h2>ログイン</h2>
-<? if ($error) { ?>
+<?php if ($error) { ?>
 <p class="error"><?=$error?></p>
-<? } ?>
+<?php } ?>
 <form method="post" action="login.php">
 <table>
 <tr><th>ログインID</th><td><input type="text" name="login_id" value="<?=h(stripslashes($login_id))?>"></td></tr>
@@ -36,6 +36,6 @@ include("include/header.inc");
 </table>
 <input type="submit" value="ログイン">
 </form>
-<?
+<?php
 include("include/footer.inc");
 ?>

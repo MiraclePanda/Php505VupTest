@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * 商品検索画面
  *   パラメータ: keyword, category, page, msg
@@ -51,9 +51,9 @@ $query_string = "keyword=" . urlencode(stripslashes($keyword)) . "&category=" . 
 
 include("include/header.inc");
 ?>
-<? if ($msg == "updated") { ?>
+<?php if ($msg == "updated") { ?>
 <p class="msg">商品情報を更新しました。</p>
-<? } ?>
+<?php } ?>
 
 <form method="get" action="<?=$PHP_SELF?>">
 キーワード: <input type="text" name="keyword" value="<?=h(stripslashes($keyword))?>" size="30">
@@ -65,15 +65,15 @@ include("include/header.inc");
 <input type="submit" value="検索">
 </form>
 
-<? if ($total == 0) { ?>
+<?php if ($total == 0) { ?>
 <p>「<?=stripslashes($keyword)?>」に該当する商品はありません。</p>
-<? } else { ?>
+<?php } else { ?>
 <p><?=$total?> 件中 <?=$offset + 1?>〜<?=min($offset + PAGE_SIZE, $total)?> 件を表示</p>
 <table class="list">
 <tr>
-<th>記号</th><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>価格</th><th>在庫</th><? if (is_login()) { ?><th>操作</th><? } ?>
+<th>記号</th><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>価格</th><th>在庫</th><?php if (is_login()) { ?><th>操作</th><?php } ?>
 </tr>
-<? while ($row = odbc_fetch_array($result)) { format_price(&$row); ?>
+<?php while ($row = odbc_fetch_array($result)) { format_price(&$row); ?>
 <tr>
 <td><?=code_prefix($row['code'])?></td>
 <td><?=h($row['code'])?></td>
@@ -81,17 +81,17 @@ include("include/header.inc");
 <td><?=h($row['category_name'])?></td>
 <td align="right"><?=$row['price_disp']?></td>
 <td align="right"><?=$row['stock']?></td>
-<? if (is_login()) { ?><td><a href="edit.php?id=<?=$row['id']?>">編集</a></td><? } ?>
+<?php if (is_login()) { ?><td><a href="edit.php?id=<?=$row['id']?>">編集</a></td><?php } ?>
 </tr>
-<? } ?>
+<?php } ?>
 </table>
 
 <div class="pager">
-<? if ($page > 1) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; 前へ</a><? } ?>
+<?php if ($page > 1) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; 前へ</a><?php } ?>
 <?=$page?> / <?=$max_page?>
-<? if ($page < $max_page) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page + 1?>">次へ &gt;&gt;</a><? } ?>
+<?php if ($page < $max_page) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page + 1?>">次へ &gt;&gt;</a><?php } ?>
 </div>
-<? } ?>
-<?
+<?php } ?>
+<?php
 include("include/footer.inc");
 ?>
