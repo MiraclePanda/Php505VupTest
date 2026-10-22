@@ -24,11 +24,11 @@ $errors = array();
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $product = new Product();
     $product->id          = $id;
-    $product->code        = $_POST['code'];
-    $product->name        = $_POST['name'];
-    $product->category_id = $_POST['category_id'];
-    $product->price       = $_POST['price'];
-    $product->stock       = $_POST['stock'];
+    $product->code        = post_var('code');
+    $product->name        = post_var('name');
+    $product->category_id = post_var('category_id');
+    $product->price       = post_var('price');
+    $product->stock       = post_var('stock');
 
     if ($product->validate($categories)) {
         $product->save();

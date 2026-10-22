@@ -22,6 +22,12 @@ function request_var($name)
     return null;
 }
 
+// POST の値を取り出す。なければ null（旧: $HTTP_POST_VARS['x'] の未定義キーは E_NOTICE を抑止して null だった）
+function post_var($name)
+{
+    return isset($_POST[$name]) ? $_POST[$name] : null;
+}
+
 function h($str)
 {
     // 旧の既定（ENT_COMPAT、文字コード指定なし）に合わせる。PHP 8 の既定は ENT_QUOTES | ENT_SUBSTITUTE、

@@ -50,7 +50,8 @@ class Product
         } elseif (strlen($this->name) > 100) {
             $this->errors[] = "商品名が長すぎます。";
         }
-        if (!array_key_exists($this->category_id, $categories)) {
+        // 未入力（null）は旧と同じく "" として探す（PHP 8.5 では null のキーは Deprecated）
+        if (!array_key_exists((string)$this->category_id, $categories)) {
             $this->errors[] = "カテゴリを選択してください。";
         }
         if (!is_string($this->price) || !preg_match('/^[0-9]+$/D', $this->price)) {
