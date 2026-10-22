@@ -9,6 +9,11 @@ $DB_DSN  = "shop";
 $DB_USER = "";
 $DB_PASS = "";
 
+// 文字コード: 画面とソースは EUC-JP のまま、DB は移行時に UTF-8 にした（newapp/db/migrate.php）。
+// 変換は db.inc で行う。UTF-8 化（3D）で APP_CHARSET を UTF-8 にすれば変換はなくなる
+define("APP_CHARSET", "EUC-JP");
+define("DB_CHARSET", "UTF-8");
+
 define("APP_TITLE", "商品管理システム");
 define("PAGE_SIZE", 5);
 

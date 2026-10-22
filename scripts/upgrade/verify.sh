@@ -39,10 +39,11 @@ MOUNTS=(-v "$ROOT/$APP_DIR:/var/www/app:ro" -v "$ROOT/db:/var/www/db:ro")
 # start.sh の自動初期化を避けるため、Apache を直接起動する
 docker run -d --name "$NAME" -p "$PORT:80" "${MOUNTS[@]}" "$IMAGE" docker-php-entrypoint apache2-foreground >/dev/null
 LEGACY_DSN="Driver=SQLite3;Database=/var/www/data/legacy.db"
-docker exec "$NAME" php /var/www/db/init.php /var/www/data/legacy.db "$LEGACY_DSN" || fail=1
+db_fail() { echo "DB の初期化・移行に失敗したため中止"; docker rm -f "$NAME" >/dev/null 2>&1; echo "RESULT: NG"; exit 1; }
+docker exec "$NAME" php /var/www/db/init.php /var/www/data/legacy.db "$LEGACY_DSN" || db_fail
 if [ -f "$NEWAPP/db/migrate.php" ] && [ "$APP_DIR" = "$NEWAPP/app" ]; then
   echo "- データ移行: $NEWAPP/db/migrate.php"
-  docker exec "$NAME" php /var/www/newapp/db/migrate.php "$LEGACY_DSN" shop /var/www/data/shop.db || fail=1
+  docker exec "$NAME" php /var/www/newapp/db/migrate.php "$LEGACY_DSN" shop /var/www/data/shop.db || db_fail
 else
   echo "- データ移行なし（旧データをそのまま使う）"
   docker exec "$NAME" sh -c 'cp /var/www/data/legacy.db /var/www/data/shop.db && chmod 666 /var/www/data/shop.db'
@@ -66,7 +67,7 @@ fi
 
 echo "### 6. 比較"
 mkdir -p "$SNAP"
-prev=$(ls -1t "$SNAP" 2>/dev/null | head -1)
+prev=$(ls -1t "$SNAP" 2>/dev/null | grep -vx "$LABEL" | head -1)
 rm -rf "${SNAP:?}/$LABEL" && cp -r "$ACTUAL" "$SNAP/$LABEL"
 if ls "$GOLDEN"/*.txt >/dev/null 2>&1; then
   echo "- ゴールデン（旧環境の記録）と比較"
