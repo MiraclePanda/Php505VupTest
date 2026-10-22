@@ -15,7 +15,7 @@ table.list th { background: #ddeeff; }
 <h1><a href="index.php"><?=APP_TITLE?></a></h1>
 <div class="nav">
 <?php if (is_login()) { ?>
-ログイン中: <?=h($login_user)?> さん | <a href="logout.php">ログアウト</a>
+ログイン中: <?=h($_SESSION['login_user'])?> さん | <a href="logout.php">ログアウト</a>
 <?php } else { ?>
 <a href="login.php">ログイン</a>
 <?php } ?>

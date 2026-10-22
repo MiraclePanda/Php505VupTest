@@ -54,6 +54,7 @@ function category_options($cats, $selected)
 // ログインチェック
 function is_login()
 {
-    return session_is_registered("login_user");
+    // 旧: session_is_registered("login_user")。値が null でも登録済みなら true だったので isset ではなく array_key_exists
+    return isset($_SESSION) && array_key_exists('login_user', $_SESSION);
 }
 ?>

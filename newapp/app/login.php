@@ -15,8 +15,8 @@ if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
          . " AND password = '" . md5($password) . "'";
     $result = db_query($sql);
     if (odbc_fetch_row($result)) {
-        session_register("login_user");
-        $login_user = odbc_result($result, "name");
+        // 旧: session_register("login_user") + グローバル変数 $login_user への代入
+        $_SESSION['login_user'] = odbc_result($result, "name");
         header("Location: index.php");
         exit;
     }
