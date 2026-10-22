@@ -16,7 +16,10 @@ if (!is_login()) {
 }
 $conn = db_connect();
 $categories = get_categories();
-$id = (int)$id;
+// 旧: register_globals で edit.php?id= の値がそのまま $id になっていた（POST 時も URL のクエリから）
+$id = (int)request_var('id');
+// 旧: 入力エラー時だけ代入され、GET 時は未定義（count(null) = 0）だった
+$errors = array();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $product = new Product();

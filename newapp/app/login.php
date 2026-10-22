@@ -9,6 +9,12 @@ require_once("include/functions.inc");
 session_start();
 $conn = db_connect();
 
+// 旧: register_globals で POST の値がそのまま変数になっていた
+$login_id = request_var('login_id');
+$password = request_var('password');
+// 旧: ログイン失敗時だけ代入され、それ以外は未定義だった
+$error = null;
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $sql = "SELECT * FROM users"
          . " WHERE login_id = '" . $login_id . "'"

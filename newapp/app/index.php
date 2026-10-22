@@ -10,6 +10,12 @@ require_once("include/functions.inc");
 session_start();
 $conn = db_connect();
 
+// 旧: register_globals で GET パラメータがそのまま変数になっていた
+$page     = request_var('page');
+$keyword  = request_var('keyword');
+$category = request_var('category');
+$msg      = request_var('msg');
+
 // ereg の $ は末尾のみ。preg の $ は末尾の改行の前にもマッチするので D を付ける。
 // 配列が来たとき ereg はマッチしなかったが preg_match は TypeError になるので is_string で守る
 if (!isset($page) || !is_string($page) || !preg_match('/^[0-9]+$/D', $page) || $page < 1) {

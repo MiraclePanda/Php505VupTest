@@ -3,6 +3,18 @@
  * 共通関数
  */
 
+// リクエストパラメータを取り出す（旧: register_globals = On で自動的にグローバル変数になっていた）
+// 旧環境の variables_order = "EGPCS" と同じく、Cookie > POST > GET の順に後勝ちで探す。なければ null
+function request_var($name)
+{
+    foreach (array($_COOKIE, $_POST, $_GET) as $src) {
+        if (isset($src[$name])) {
+            return $src[$name];
+        }
+    }
+    return null;
+}
+
 function h($str)
 {
     return htmlspecialchars($str);
