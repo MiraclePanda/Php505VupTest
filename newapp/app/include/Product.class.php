@@ -12,7 +12,8 @@ class Product
     var $stock;
     var $errors;
 
-    function Product($row = null)
+    // 旧: PHP 4 形式のコンストラクタ function Product($row)。PHP 8 では普通のメソッドになり呼ばれない
+    function __construct($row = null)
     {
         $this->errors = array();
         if ($row) {
@@ -25,8 +26,8 @@ class Product
         }
     }
 
-    // Product::find($id) で呼び出す
-    function find($id)
+    // Product::find($id) で呼び出す（PHP 8 では static がないと Error）
+    static function find($id)
     {
         $result = db_query("SELECT * FROM products WHERE id = " . $id);
         $row = odbc_fetch_array($result);
