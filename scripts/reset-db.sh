@@ -9,4 +9,4 @@ case "$ENV_NAME" in
   modern) PHP=php ;;
   *) echo "usage: $0 legacy|modern" >&2; exit 2 ;;
 esac
-docker compose -f "$ROOT/docker/compose.$ENV_NAME.yml" exec -T web "$PHP" "/var/www/db/init_$ENV_NAME.php"
+docker compose -f "$ROOT/docker/compose.$ENV_NAME.yml" exec -T web "$PHP" /var/www/db/init.php

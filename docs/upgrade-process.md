@@ -20,7 +20,7 @@ Claude Code を使って、PHP 5.0.5 時代のアプリケーションを PHP 8.
 | 2. 特性テスト | 旧環境の振る舞いを記録 | `tests/characterization/golden/` | 旧 |
 | 3A. 前倒し修正 | 5.0.5 でも動く書き方へ置換 | コード修正（ルールごとのコミット） | 旧 |
 | 3B. ランタイム切替 | PHP 8.5 で動かし、残課題を解消 | コード修正、既知差分一覧 | 新 |
-| 3C. DB 移行 | SQLite 2 → 3（本番は Symfoware の移行方式を別途決める） | 移行スクリプト | 新 |
+| 3C. DB 移行 | ODBC 接続の継続か PDO_ODBC か、DB の世代交代（サンプルは SQLite 2 → 3） | 移行スクリプト、DSN 設定 | 新 |
 | 3D. UTF-8 化 | EUC-JP → UTF-8（ソース・データ・画面） | 変換スクリプト、ゴールデンの取り直し | 新 |
 | 3E. 改善（任意） | セキュリティ・保守性の改善 | 別 PR | 新 |
 | 4. 受け入れ | 完了条件の確認 | チェックリスト | 新 |
@@ -29,7 +29,7 @@ Claude Code を使って、PHP 5.0.5 時代のアプリケーションを PHP 8.
 
 - **ソース一式を Git 管理下に置く。** 本番サーバ上にしかないファイル（設定、`.htaccess`、cron スクリプト）も回収する。
 - **本番の実行設定を入手する。** `php.ini`、Apache の設定、DB の接続設定（Symfoware の場合は ODBC の DSN 定義など）。特に `register_globals`、`magic_quotes_gpc`、`magic_quotes_sybase`、`short_open_tag`、`default_charset`、`mbstring.*` の値は振る舞いを大きく左右する。入手できない場合は当時の既定値を仮定し、その旨を記録する。
-- **旧環境を Docker で再現する。** PHP 5.0.5 の公式イメージはないため、当時のディストリビューション（本リポジトリでは Debian etch）上でソースからビルドする。本番の DB は Symfoware だが、検証用には PHP 5.0 に同梱の SQLite 2（`sqlite_*` 関数）で代用する。
+- **旧環境を Docker で再現する。** PHP 5.0.5 の公式イメージはないため、当時のディストリビューション（本リポジトリでは Debian etch）上でソースからビルドする。本番の DB は Symfoware（ODBC 接続）だが、検証用には SQLite の ODBC ドライバで代用する。アプリからは同じ `odbc_*` 関数で接続する。
 - **テスト用データを用意する。** 本番データを使う場合は個人情報をマスクする。特性テストは決まったデータを前提にするので、初期化スクリプトで毎回同じ状態に戻せるようにする（`scripts/reset-db.sh`）。
 
 ## 4. フェーズ 1: 棚卸し
@@ -40,7 +40,7 @@ Claude Code を使って、PHP 5.0.5 時代のアプリケーションを PHP 8.
 |---|---|---|
 | 実行設定依存 | register_globals、magic_quotes、短縮タグ | grep、php.ini との突き合わせ、目視 |
 | 削除された構文 | 実行時参照渡し、`=& new`、`$s{0}` | PHP 8.5 での `php -l` |
-| 削除された関数・拡張 | `sqlite_*`、`ereg`、`split`、`each`、`create_function`、`session_register` | grep、PHPCompatibility（phpcs） |
+| 削除された関数・拡張 | `ereg`、`split`、`each`、`create_function`、`session_register` | grep、PHPCompatibility（phpcs） |
 | 意味が変わった仕様 | 数値と文字列の比較、PHP4 形式コンストラクタ、`htmlspecialchars` の既定値、`count(null)` | 静的解析だけでは漏れる。特性テストで検出 |
 | 非推奨（8.x） | `(integer)` などの非標準キャスト名（8.5）、動的プロパティ（8.2） | PHP 8.5 で E_ALL 実行、PHPCompatibility |
 | DB | DB 拡張の関数への直接依存、DB 製品固有の SQL、データファイル形式 | grep、DB 移行リハーサル |
@@ -92,7 +92,7 @@ PHP 5.0.5 でも PHP 8.5 でも動く書き方に置き換える。各ステッ�
 | 5 | 実行時参照渡し、`=& new`、`$s{0}`、`(integer)` | 可 |
 | 6 | PHP4 形式コンストラクタ → `__construct`、静的に呼ぶメソッドに `static` | 可 |
 | 7 | `ereg` → `preg_match`、`split` → `explode` / `preg_split`、`each` → `foreach`、`create_function` → 名前付き関数 | 可（無名関数は 5.3 以降なので使わない） |
-| 8 | `sqlite_*` の呼び出しを DB ラッパー（`db.inc`）に集約し、プレースホルダ付きの `db_query($sql, $params)` を用意 | 可（内部は `sqlite_escape_string` で実装） |
+| 8 | `odbc_*` の呼び出しを DB ラッパー（`db.inc`）に集約し、プレースホルダ付きの `db_query($sql, $params)` を用意 | 可（内部は `odbc_prepare` / `odbc_execute` で実装） |
 | 8b | 文字コードを暗黙の設定に頼らず明示する（`htmlspecialchars($s, ENT_COMPAT, 'EUC-JP')`、`mb_convert_kana($s, 's', 'EUC-JP')`、`header('Content-Type: text/html; charset=EUC-JP')`） | 可 |
 | 9 | `magic_quotes_gpc` を Off にし、`stripslashes` を除去 | 可（旧環境の php.ini を変更して確認） |
 | 10 | 旧環境の `register_globals` を Off にして特性テスト | 可 |
@@ -101,20 +101,20 @@ PHP 5.0.5 でも PHP 8.5 でも動く書き方に置き換える。各ステッ�
 
 ### 3B. ランタイム切替（PHP 8.5）
 
-1. `db.inc` の内部実装を PDO（例外モード）に差し替える。呼び出し側は 3A-8 で集約済みなので変更は局所化される。
+1. 必要なら `db.inc` の内部実装を PDO_ODBC（例外モード）に差し替える。`odbc_*` を使い続ける場合も、エラー処理を例外かログ出力に改める。呼び出し側は 3A-8 で集約済みなので変更は局所化される。
 2. `error_reporting = E_ALL` で特性テストを実行し、Fatal、Warning、Deprecated をすべて解消する。
 3. 意味が変わった仕様（数値と文字列の比較、`count(null)`、`htmlspecialchars` の既定フラグと既定文字コード、`default_charset`）による差分を確認し、回帰か仕様変更かを分類する。この段階では EUC-JP のまま動かし、特性テストを EUC-JP のバイト列で比較する。
 4. 新環境での特性テストの結果を `known-differences.md` と照合し、記録のない差分がゼロになるまで繰り返す。
 
 ### 3C. DB 移行
 
-サンプルでは SQLite 2 → SQLite 3。
+本番は Symfoware に ODBC で接続している。サンプルでは SQLite の ODBC ドライバで代用し、SQLite 2 → SQLite 3 への世代交代を「DB のバージョンアップ」に見立てている。
 
-- SQLite 2 のデータファイルは SQLite 3 で開けないため、旧環境でダンプ（または PHP でテーブルごとに読み出し）し、SQLite 3 に投入し直す。
-- 件数と主要列のハッシュを旧新で突き合わせる。
-- SQL 方言の違い（SQLite 2 → 3 では小さいが、日付関数や型の扱いを確認する）を洗い出す。
-
-本番の Symfoware については、当時の接続方式（ODBC か、専用の拡張か）と移行先の DB 製品が決まってから手順を追加する。ODBC 経由の場合、`odbc_*` 関数は PHP 8.5 にも残っているため、DB 層の変更範囲はサンプルより小さくなる可能性がある（要確認）。
+- **接続方式を決める。** `odbc_*` 関数は PHP 8.5 にも残っているため、そのまま使い続けることもできる。PDO_ODBC に移すと、プリペアドステートメントと例外処理を PDO の流儀で書ける。どちらの場合も、文字列連結の SQL はプレースホルダに置き換える。
+- **実行環境を用意する。** unixODBC、DB の ODBC ドライバ、DSN 定義（`/etc/odbc.ini`）を移行先に用意する。PHP 8.5 の公式 Docker イメージでは odbc 拡張のビルドに手当てが必要（`docker/modern/Dockerfile` 参照）。
+- **データを移す。** 旧 DB からデータを抜き出し、新 DB に投入し直す。件数と主要列のハッシュを旧新で突き合わせる。
+- **文字コードを確認する。** 新しい DB やドライバが UTF-8 を前提にしていると、EUC-JP のまま格納したデータで検索や比較の結果が狂う（サンプルでは SQLite 3 の LIKE で実際に起きる）。DB 側の文字コードを先に決め、アプリとの境界で変換するかどうかを 3D と合わせて判断する。
+- **SQL 方言と ODBC ドライバの違いを確認する。** 列名の大文字小文字、`odbc_num_rows` が返す値、日付型の扱いなどはドライバによって異なる。
 
 ### 3D. UTF-8 化（EUC-JP → UTF-8）
 
@@ -194,7 +194,7 @@ tests/characterization/compare.sh
 
 ## 10. 未確定事項
 
-- 実案件で Symfoware にどう接続しているか（ODBC か専用拡張か）、移行後の DB 製品をどうするか
+- 移行後も Symfoware を使うか（使う場合はバージョンと ODBC ドライバ）、別の DB 製品に移るか
 - UTF-8 化を今回の移行範囲に含めるか
 - 本番の php.ini を入手できるか
 - 3A（旧環境での前倒し修正）が難しい規模・構成の場合に、直接 8.5 へ移行する手順を別に用意するか

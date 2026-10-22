@@ -1,5 +1,6 @@
--- 商品管理システム スキーマ（SQLite 2.8 / PHP 5.0 の sqlite 拡張）
--- 本番は Symfoware。検証用に SQLite で代用している
+-- 商品管理システム スキーマ
+-- 本番は Symfoware（ODBC 接続）。検証用に SQLite（ODBC ドライバ経由）で代用している
+-- ODBC では 1 回に 1 文しか実行できないため、db/init.php が ; で分割して流す
 -- 文字コード: EUC-JP（バイト列のまま格納）
 
 CREATE TABLE categories (

@@ -29,10 +29,11 @@ class Product
     function find($id)
     {
         $result = db_query("SELECT * FROM products WHERE id = " . $id);
-        if (sqlite_num_rows($result) == 0) {
+        $row = odbc_fetch_array($result);
+        if (!$row) {
             return false;
         }
-        return new Product(sqlite_fetch_array($result, SQLITE_ASSOC));
+        return new Product($row);
     }
 
     function validate($categories)
@@ -61,8 +62,6 @@ class Product
 
     function save()
     {
-        global $conn;
-
         $sql = "UPDATE products SET"
              . " code = '$this->code',"
              . " name = '$this->name',"
@@ -71,8 +70,8 @@ class Product
              . " stock = $this->stock,"
              . " updated_at = '" . date("Y-m-d H:i:s") . "'"
              . " WHERE id = $this->id";
-        db_query($sql);
-        return sqlite_changes($conn);
+        $result = db_query($sql);
+        return odbc_num_rows($result);
     }
 }
 ?>

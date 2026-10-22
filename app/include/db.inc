@@ -1,13 +1,13 @@
 <?php
 /*
- * DBアクセス共通関数（SQLite）
+ * DBアクセス共通関数（ODBC）
  */
 
 function db_connect()
 {
-    global $DB_FILE;
+    global $DB_DSN, $DB_USER, $DB_PASS;
 
-    $conn = @sqlite_open($DB_FILE, 0666, $sqlite_error) or die("DB接続エラー: " . $sqlite_error);
+    $conn = @odbc_connect($DB_DSN, $DB_USER, $DB_PASS) or die("DB接続エラー: " . odbc_errormsg());
     return $conn;
 }
 
@@ -15,9 +15,9 @@ function db_query($sql)
 {
     global $conn;
 
-    $result = @sqlite_query($conn, $sql);
+    $result = @odbc_exec($conn, $sql);
     if (!$result) {
-        die("SQLエラー: " . sqlite_error_string(sqlite_last_error($conn)) . "<br>" . $sql);
+        die("SQLエラー: " . odbc_errormsg($conn) . "<br>" . $sql);
     }
     return $result;
 }

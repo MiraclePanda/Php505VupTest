@@ -1,4 +1,4 @@
-# 旧環境: PHP 5.0.5 + Apache 2.0 + SQLite 2
+# 旧環境: PHP 5.0.5 + Apache 2.0 + ODBC + SQLite 2（本番 Symfoware の代用）
 #   docker compose -f docker/compose.legacy.yml up -d --build
 #   http://localhost:8050/
 name: php505-legacy
