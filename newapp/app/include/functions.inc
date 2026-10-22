@@ -17,7 +17,9 @@ function request_var($name)
 
 function h($str)
 {
-    return htmlspecialchars($str);
+    // 旧の既定（ENT_COMPAT、文字コード指定なし）に合わせる。PHP 8 の既定は ENT_QUOTES | ENT_SUBSTITUTE、
+    // 文字コード UTF-8 で、EUC-JP の日本語が化ける。null は旧と同じく空文字（PHP 8.1 以降 null は Deprecated）
+    return htmlspecialchars((string)$str, ENT_COMPAT, 'EUC-JP');
 }
 
 // 価格を表示用に整形して $row['price_disp'] に入れる

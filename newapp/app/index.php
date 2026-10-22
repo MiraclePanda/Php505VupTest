@@ -29,7 +29,8 @@ $where = "1=1";
 $params = array();
 if ($keyword != "") {
     // 全角スペースも区切りとして扱う
-    $keyword = trim(mb_convert_kana($keyword, "s"));
+    // 旧: mbstring.internal_encoding = EUC-JP が既定だった。PHP 8 の既定は UTF-8 なので明示する
+    $keyword = trim(mb_convert_kana($keyword, "s", "EUC-JP"));
     $words = explode(" ", $keyword);
     for ($i = 0; $i < count($words); $i++) {
         if ($words[$i] == "") {
