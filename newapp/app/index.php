@@ -10,7 +10,9 @@ require_once("include/functions.inc");
 session_start();
 $conn = db_connect();
 
-if (!isset($page) || !ereg("^[0-9]+$", $page) || $page < 1) {
+// ereg の $ は末尾のみ。preg の $ は末尾の改行の前にもマッチするので D を付ける。
+// 配列が来たとき ereg はマッチしなかったが preg_match は TypeError になるので is_string で守る
+if (!isset($page) || !is_string($page) || !preg_match('/^[0-9]+$/D', $page) || $page < 1) {
     $page = 1;
 }
 $categories = get_categories();
@@ -20,7 +22,7 @@ $where = "1=1";
 if ($keyword != "") {
     // 全角スペースも区切りとして扱う
     $keyword = trim(mb_convert_kana($keyword, "s"));
-    $words = split(" ", $keyword);
+    $words = explode(" ", $keyword);
     for ($i = 0; $i < count($words); $i++) {
         if ($words[$i] == "") {
             continue;

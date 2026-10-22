@@ -40,7 +40,8 @@ class Product
     {
         $this->errors = array();
 
-        if (!ereg("^[A-Z]{2}-[0-9]{4}$", $this->code)) {
+        // ereg → preg_match。$ の意味を揃えるため D 修飾子、配列や null は旧と同じく「不一致」
+        if (!is_string($this->code) || !preg_match('/^[A-Z]{2}-[0-9]{4}$/D', $this->code)) {
             $this->errors[] = "商品コードは「AA-9999」の形式で入力してください。";
         }
         if ($this->name == "") {
@@ -51,10 +52,10 @@ class Product
         if (!array_key_exists($this->category_id, $categories)) {
             $this->errors[] = "カテゴリを選択してください。";
         }
-        if (!ereg("^[0-9]+$", $this->price)) {
+        if (!is_string($this->price) || !preg_match('/^[0-9]+$/D', $this->price)) {
             $this->errors[] = "価格は半角数字で入力してください。";
         }
-        if (!ereg("^[0-9]+$", $this->stock)) {
+        if (!is_string($this->stock) || !preg_match('/^[0-9]+$/D', $this->stock)) {
             $this->errors[] = "在庫数は半角数字で入力してください。";
         }
         return count($this->errors) == 0;

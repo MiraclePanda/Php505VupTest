@@ -30,16 +30,21 @@ function get_categories()
     while (odbc_fetch_row($result)) {
         $cats[odbc_result($result, "id")] = odbc_result($result, "name");
     }
-    uasort($cats, create_function('$a, $b', 'return strcmp($a, $b);'));
+    uasort($cats, 'compare_category_name');
     return $cats;
+}
+
+// get_categories() の並べ替え用（旧: create_function で作っていた比較関数）
+function compare_category_name($a, $b)
+{
+    return strcmp($a, $b);
 }
 
 // <option>タグを生成
 function category_options($cats, $selected)
 {
     $html = "";
-    reset($cats);
-    while (list($id, $name) = each($cats)) {
+    foreach ($cats as $id => $name) {
         $sel = ($id == $selected) ? " selected" : "";
         $html .= "<option value=\"" . $id . "\"" . $sel . ">" . h($name) . "</option>\n";
     }
