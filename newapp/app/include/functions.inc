@@ -16,7 +16,7 @@ function request_var($name)
 {
     foreach (array($_COOKIE, $_POST, $_GET) as $src) {
         if (isset($src[$name])) {
-            return $src[$name];
+            return scalar_input($src[$name]);
         }
     }
     return null;
@@ -25,7 +25,15 @@ function request_var($name)
 // POST の値を取り出す。なければ null（旧: $HTTP_POST_VARS['x'] の未定義キーは E_NOTICE を抑止して null だった）
 function post_var($name)
 {
-    return isset($_POST[$name]) ? $_POST[$name] : null;
+    return isset($_POST[$name]) ? scalar_input($_POST[$name]) : null;
+}
+
+// 文字列を期待する入力に配列（name[]=x）が来たら、未指定（null）として扱う。
+// 旧（PHP 5.0）は関数ごとに "Array" への変換や null 返しで黙って処理を続けたが、PHP 8 では strlen() などが
+// TypeError（Fatal）になる。旧の挙動は関数ごとにまちまちで再現に意味がないため、未指定に揃える（仕様変更候補）
+function scalar_input($value)
+{
+    return is_array($value) ? null : $value;
 }
 
 function h($str)
