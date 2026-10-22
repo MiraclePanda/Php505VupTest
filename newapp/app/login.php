@@ -9,7 +9,7 @@ require_once("include/functions.inc");
 session_start();
 $conn = db_connect();
 
-if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $sql = "SELECT * FROM users"
          . " WHERE login_id = '" . $login_id . "'"
          . " AND password = '" . md5($password) . "'";

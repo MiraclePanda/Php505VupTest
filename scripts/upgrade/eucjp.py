@@ -68,16 +68,18 @@ def parse_blocks(src):
 
 
 def main():
-    if len(sys.argv) < 3:
+    flags = [a for a in sys.argv[1:] if a.startswith("--")]
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if len(args) < 2:
         sys.exit(__doc__)
-    cmd, path = sys.argv[1], sys.argv[2]
+    cmd, path = args[0], args[1]
     if cmd == "cat":
         sys.stdout.write(read(path))
     elif cmd == "write":
         write(path, sys.stdin.read())
     elif cmd == "replace":
         text = read(path)
-        replace_all = "--all" in sys.argv[3:]
+        replace_all = "--all" in flags
         for old, new in parse_blocks(sys.stdin.read()):
             n = text.count(old)
             if n == 0:
@@ -89,7 +91,7 @@ def main():
         print(f"{path}: 置換しました")
     elif cmd == "check":
         bad = 0
-        for p in sys.argv[2:]:
+        for p in args[1:]:
             data = open(p, "rb").read()
             try:
                 if data.decode(ENC).encode(ENC) != data:

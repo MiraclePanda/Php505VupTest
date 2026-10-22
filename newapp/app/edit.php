@@ -18,14 +18,14 @@ $conn = db_connect();
 $categories = get_categories();
 $id = (int)$id;
 
-if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $product = new Product();
     $product->id          = $id;
-    $product->code        = $HTTP_POST_VARS['code'];
-    $product->name        = $HTTP_POST_VARS['name'];
-    $product->category_id = $HTTP_POST_VARS['category_id'];
-    $product->price       = $HTTP_POST_VARS['price'];
-    $product->stock       = $HTTP_POST_VARS['stock'];
+    $product->code        = $_POST['code'];
+    $product->name        = $_POST['name'];
+    $product->category_id = $_POST['category_id'];
+    $product->price       = $_POST['price'];
+    $product->stock       = $_POST['stock'];
 
     if ($product->validate($categories)) {
         $product->save();

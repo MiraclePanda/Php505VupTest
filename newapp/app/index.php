@@ -57,7 +57,7 @@ include("include/header.inc");
 <p class="msg">商品情報を更新しました。</p>
 <?php } ?>
 
-<form method="get" action="<?=$PHP_SELF?>">
+<form method="get" action="<?=$_SERVER['PHP_SELF']?>">
 キーワード: <input type="text" name="keyword" value="<?=h(stripslashes($keyword))?>" size="30">
 カテゴリ:
 <select name="category">
@@ -89,9 +89,9 @@ include("include/header.inc");
 </table>
 
 <div class="pager">
-<?php if ($page > 1) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; 前へ</a><?php } ?>
+<?php if ($page > 1) { ?><a href="<?=$_SERVER['PHP_SELF']?>?<?=$query_string?>&page=<?=$page - 1?>">&lt;&lt; 前へ</a><?php } ?>
 <?=$page?> / <?=$max_page?>
-<?php if ($page < $max_page) { ?><a href="<?=$PHP_SELF?>?<?=$query_string?>&page=<?=$page + 1?>">次へ &gt;&gt;</a><?php } ?>
+<?php if ($page < $max_page) { ?><a href="<?=$_SERVER['PHP_SELF']?>?<?=$query_string?>&page=<?=$page + 1?>">次へ &gt;&gt;</a><?php } ?>
 </div>
 <?php } ?>
 <?php
