@@ -9,7 +9,7 @@ case "$input" in
   *) exit 0 ;;
 esac
 files=$( { git diff --name-only -- newapp; git ls-files --others --exclude-standard -- newapp; } \
-  | grep -E '\.(php|inc)$' | sort -u)
+  | grep -E '\.(php|inc|tpl|phtml)$' | sort -u)
 [ -z "$files" ] && exit 0
 existing=()
 for f in $files; do [ -f "$f" ] && existing+=("$f"); done
