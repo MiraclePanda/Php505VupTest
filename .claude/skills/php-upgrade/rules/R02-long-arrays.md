@@ -3,7 +3,7 @@ id: R02
 title: 旧スーパーグローバル（$HTTP_*_VARS, $PHP_SELF）
 phase: 3A
 category: 実行設定依存
-order: 20
+order: 50
 detect:
   - '\$HTTP_(GET|POST|COOKIE|SERVER|ENV|SESSION|POST_FILES)_VARS'
   - '\$PHP_SELF\b'

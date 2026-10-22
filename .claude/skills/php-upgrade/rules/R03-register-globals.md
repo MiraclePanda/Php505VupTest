@@ -3,7 +3,7 @@ id: R03
 title: register_globals 依存の除去
 phase: 3A
 category: 実行設定依存
-order: 30
+order: 60
 detect:
   - 'extract\(\s*\$_(GET|POST|REQUEST|COOKIE|SERVER)'
   - 'import_request_variables'
@@ -39,3 +39,6 @@ detect:
 - 配列パラメータ（`?a[]=1`）が来ると、旧環境でも新環境でも配列が入る。文字列前提の関数（`trim` など）に渡ると PHP 8 では TypeError で Fatal になる。互換移行ではヘルパーの戻り値を変えずに残し、改善で型を検査する（判断が要る場合は人に上げる）。
 - 「注入できた」挙動（`?error=<script>` が表示される等）は初期化で消える。セキュリティ上の改善だが、互換移行で必ず起きる差分として分類案に書く。
 - `$_REQUEST` を使うと PHP 8 の `request_order`（既定 "GP"）に左右され、Cookie が入らない。旧の挙動と揃えるならヘルパーを使う。
+
+## 学び（実施記録）
+- 2026-10-22-01: globals-scan は index/edit/login の入力値と、`$errors` `$error` の条件付き代入、header.inc のセッション変数をすべて拾えた。`$product`（if / else の両方で代入）は誤検出。

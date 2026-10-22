@@ -3,7 +3,7 @@ id: R08
 title: 削除された関数（ereg 系、split、each、create_function など）
 phase: 3A
 category: 削除された関数
-order: 80
+order: 30
 detect:
   - '\b(ereg|eregi|ereg_replace|eregi_replace|split|spliti|sql_regcase)\s*\('
   - '\beach\s*\('
@@ -33,3 +33,7 @@ Fatal error（undefined function）。
 - POSIX 文字クラス `[[:alpha:]]` は PCRE でも使える。`[[:<:]]` などの単語境界は PCRE に無い（`\b`）。
 - ereg はマルチバイトを考慮しない（バイト単位）。preg も `u` を付けなければバイト単位なので、EUC-JP のままなら `u` を付けないこと。
 - `split` の第 3 引数 limit は `explode` / `preg_split` でも同じ意味。
+
+## 学び（実施記録）
+- 2026-10-22-01: `ereg('^[0-9]+$')` を `D` なしの preg にすると `page=2\n` が通る（旧は不一致で 1 ページ目）。特性テスト 27 で確認できるようにした。
+- 2026-10-22-01: `ereg` に配列が来ても旧は不一致で済んだが、`preg_match` は TypeError。`is_string($v) && preg_match(...)` にする。

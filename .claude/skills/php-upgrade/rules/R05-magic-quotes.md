@@ -3,7 +3,7 @@ id: R05
 title: magic_quotes 依存の除去
 phase: 3A
 category: 実行設定依存
-order: 50
+order: 80
 detect:
   - '\bstripslashes\s*\('
   - '\baddslashes\s*\('
@@ -31,3 +31,6 @@ detect:
 - **パスワードハッシュ**: `md5($password)` がエスケープ後の値のハッシュだった。`'` `\` を含むパスワードのユーザーはログインできなくなる（または逆）。
   既存ハッシュの作られ方を確認し、必要なら旧挙動を再現する関数を用意して人に判断を仰ぐ。
 - 旧環境の `magic_quotes_runtime` が On だった場合は、DB やファイルから読んだ値にもエスケープがかかっていた。
+
+## 学び（実施記録）
+- 2026-10-22-01: `magic_quotes_sybase = On` の環境だったため、再表示のバグは `O\'Reilly` ではなく `O''Reilly` になる（解答キー B01 の記述は sybase=Off を前提にしている）。**php.ini を見ずに想定しない。**

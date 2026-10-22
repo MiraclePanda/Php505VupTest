@@ -5,6 +5,8 @@ PHP 5.0.5 で作られたアプリケーションを、Claude Code を使って 
 - [アップグレードプロセス](docs/upgrade-process.md)
 - [サンプルアプリに仕込んだ移行課題（解答キー）](docs/sample-app-traps.md)
 - [既知の差分](docs/known-differences.md)
+- [移行結果（PHP 8.5）](newapp/)：[移行レポート](newapp/docs/migration-report.md)、[差分の分類案](newapp/docs/diff-classification.md)、[棚卸し](newapp/docs/inventory.md)
+- [移行の自動化（スキル・ルール・ノウハウ）](.claude/skills/php-upgrade/SKILL.md)
 
 ## サンプルアプリ（`app/`）
 
@@ -29,8 +31,11 @@ git config diff.eucjp.textconv "iconv -f EUC-JP -t UTF-8"
 # 旧環境: PHP 5.0.5 + Apache 2.0 + ODBC + SQLite 2 → http://localhost:8050/
 docker compose -f docker/compose.legacy.yml up -d --build
 
-# 新環境: PHP 8.5 + Apache 2.4 + ODBC + SQLite 3 → http://localhost:8085/
+# 新環境: PHP 8.5 + Apache 2.4 + ODBC + SQLite 3 → http://localhost:8085/（既定で newapp/app を動かす）
 docker compose -f docker/compose.modern.yml up -d --build
+
+# 移行結果の検証一式（構文、文字コード、DB 移行、特性テスト、PHP エラー、期待値の照合）
+scripts/upgrade/verify.sh final
 
 # 特性テスト
 scripts/reset-db.sh legacy

@@ -26,7 +26,8 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 | `scripts/upgrade/eucjp.py` | **EUC-JP ファイルの読み書き**。Edit / Write は UTF-8 以外を扱えないので必ずこれを使う |
 | `scripts/upgrade/lint.sh` | PHP 8.5 で `php -l`（Deprecated も失敗扱い） |
 | `scripts/upgrade/scan.py --rule Rnn` | ルール 1 つの残件確認 |
-| `scripts/upgrade/verify.sh <label>` | 構文・文字コード・新環境での特性テスト・PHP エラー検出・前ステップとの差分 |
+| `scripts/upgrade/verify.sh <label>` | 構文・文字コード・新環境での特性テスト・PHP エラー検出・期待値との照合・前ステップとの差分 |
+| `scripts/upgrade/tools/like-charset-check.php` | DB の LIKE が非 UTF-8 のデータを正しく検索できるかを測る（R12） |
 | フック（`.claude/settings.json`） | app/ と golden/ の書き換え拒否、解答キーの参照拒否、newapp 変更後の自動 lint |
 
 ## 手順
@@ -40,7 +41,19 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 - `scripts/upgrade/inventory.sh app > newapp/docs/inventory-raw.md` の結果と、全ソースの目視から `newapp/docs/inventory.md` を書く。
 - 各課題に: ルール ID（なければ `NEW-n` として新ルール案）、場所、症状（Fatal / 黙って壊れる / 警告 / 差分のみ）、直し方の方針、**人の判断が要るか**。
 - 「エラーにならずに結果が変わる」課題（PHP4 コンストラクタ、比較規則、magic_quotes の副作用、文字コード）を特に探す。`php -l` と grep で拾えるものは半分程度しかない前提で、全ファイルを 1 行ずつ読む。
+- ソースの外の前提（拡張、ODBC の DSN とドライバ、php.ini、タイムゾーン、cron）を R14 に沿って書く。
+- 「当時のバグ」（エラー時に 200 で die する、エスケープが二重になる等）も、直さない前提で一覧に載せる。直さないことを人が確認できるようにするため。
 - コミット: 「棚卸し」
+
+### 1.5 期待値とテストケースを足す（ゴールデンがない場合は必須）
+- **ゴールデンがないと、`verify.sh` は「PHP エラーが出ない」ことしか確かめられない。** PHP エラーを出さずに結果だけが変わる回帰
+  （検索結果が 0 件になる等）を見逃す（2026-10-22-01 で実際に起きた）。
+- 棚卸しの各課題について、旧環境ならどう応答するかを `tests/characterization/expectations.tsv` に書く。
+  新でも成り立つべきものは `must`、旧のバグなど移行で変わりうるものは `legacy`。
+- 既存の特性テストが課題を踏んでいなければ、`tests/characterization/run.sh` にケースを足す。
+  ルールの「落とし穴」と「学び」が材料（1 文字の日本語検索、文字境界をまたぐ語、空のパラメータ、末尾に改行のある数値、項目の欠落）。
+- テストの追加は移行とは別のコミットにする。
+- コミット: 「特性テストの期待値とケースを追加」
 
 ### 2. ルールごとの移行（`upgrade-migrator` → `upgrade-verifier` → `upgrade-reviewer`）
 ルールカタログの `order` 順に、棚卸しで該当があったルールを 1 つずつ処理する。1 ルールにつき:
@@ -53,8 +66,10 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 3. **意味のレビュー**（`upgrade-reviewer`）: コミット前の差分を、旧環境の php.ini と PHP 5.0 の意味で読み、振る舞いが同じかを確認する。ゴールデンがない間は**ここが主な安全網**。
 4. コミット: `[Rnn] <ルール名>`。本文に、直した場所、検証結果（verify の要約）、人の判断が要る点。
 
-順序の注意:
+順序の注意（`order` は実施で確かめた順。理由は各ルールの「学び」）:
 - R01（短縮タグ）を最初に。これが残っているとソースが出力され、他の検証が意味をなさない。
+- 次に Fatal を出すもの（R06 構文 → R08 関数 → R04 セッション）。画面が動く状態を早く作り、以後のステップで画面単位の差分を見られるようにする。
+- R11（比較規則）は R09（プレースホルダ化）より先に。逆にすると SQL エラー（うるさい失敗）が 0 件（静かな失敗）に変わって見えなくなる。
 - R05（magic_quotes）と R09（DB のプレースホルダ化）は同時に効かせないと、`'` を含む入力で SQL エラーになる中間状態ができる。R05 では表示側の `stripslashes` だけ外し、SQL 側は R09 で直す。中間状態の差分は検証で「R09 で直る」と記録する。
 - R12（DB の文字コード）はデータ移行スクリプト `newapp/db/migrate.php` と DB ラッパーの変換を同じコミットにする。
 
@@ -64,7 +79,8 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 - **自分で承認しない。** `docs/known-differences.md` には人が承認したものだけを書く。
 
 ### 4. 受け入れ確認とレポート
-- `scripts/upgrade/verify.sh final` が RESULT: OK（PHP エラーなし）。
+- `scripts/upgrade/verify.sh final` が RESULT: OK（PHP エラーなし、expectations の must がすべて一致）。
+- 最終の特性テスト結果を `newapp/docs/characterization-php85/` に保存する（ゴールデンを記録したときの比較用）。
 - `python3 scripts/upgrade/scan.py newapp/app` で残件を確認し、残すものは理由を書く（detect は広めなので、正しい書き方も拾う）。
 - `newapp/docs/migration-report.md` を書く: 適用したルールとコミット、検証結果、人の判断が要る点、未確認事項（ゴールデンがないなど）、所要時間とつまずき。
 
