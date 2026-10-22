@@ -1,0 +1,88 @@
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=EUC-JP
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<title>商品管理システム</title>
+<style type="text/css">
+body { font-family: sans-serif; font-size: 13px; }
+table.list { border-collapse: collapse; }
+table.list th, table.list td { border: 1px solid #999; padding: 3px 6px; }
+table.list th { background: #ddeeff; }
+.msg { color: #008800; }
+.error { color: #cc0000; }
+</style>
+</head>
+<body>
+<h1><a href="index.php">商品管理システム</a></h1>
+<div class="nav">
+<a href="login.php">ログイン</a>
+</div>
+<hr>
+
+<form method="get" action="/index.php">
+キーワード: <input type="text" name="keyword" value="" size="30">
+カテゴリ:
+<select name="category">
+<option value="">すべて</option>
+<option value="4">書籍</option>
+<option value="2">食品</option>
+<option value="3">日用品</option>
+<option value="1">文房具</option>
+</select>
+<input type="submit" value="検索">
+</form>
+
+<p>12 件中 6〜10 件を表示</p>
+<table class="list">
+<tr>
+<th>記号</th><th>商品コード</th><th>商品名</th><th>カテゴリ</th><th>価格</th><th>在庫</th></tr>
+<tr>
+<td>FD</td>
+<td>FD-0001</td>
+<td>天然水 2L</td>
+<td>食品</td>
+<td align="right">198円</td>
+<td align="right">600</td>
+</tr>
+<tr>
+<td>FD</td>
+<td>FD-0002</td>
+<td>緑茶 500ml</td>
+<td>食品</td>
+<td align="right">147円</td>
+<td align="right">480</td>
+</tr>
+<tr>
+<td>FD</td>
+<td>FD-0003</td>
+<td>&lt;特選&gt; 煎餅 詰め合わせ</td>
+<td>食品</td>
+<td align="right">1,050円</td>
+<td align="right">12</td>
+</tr>
+<tr>
+<td>ST</td>
+<td>ST-0001</td>
+<td>ボールペン 黒 0.5mm</td>
+<td>文房具</td>
+<td align="right">120円</td>
+<td align="right">250</td>
+</tr>
+<tr>
+<td>ST</td>
+<td>ST-0002</td>
+<td>ボールペン 赤 0.5mm</td>
+<td>文房具</td>
+<td align="right">120円</td>
+<td align="right">180</td>
+</tr>
+</table>
+
+<div class="pager">
+<a href="/index.php?keyword=&category=&page=1">&lt;&lt; 前へ</a>2 / 3<a href="/index.php?keyword=&category=&page=3">次へ &gt;&gt;</a></div>
+<hr>
+<div class="footer">Copyright &copy; 2005 Sample Shop</div>
+</body>
+</html>
