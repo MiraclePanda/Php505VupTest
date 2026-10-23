@@ -6,7 +6,7 @@ H03	code	must	spl_autoload_register
 H04	code	must_not	\blist_max\b
 H04	code	must_not	define\s*\([^;]*,\s*true\s*\)
 H05	inventory	must	(?s)switch.{0,300}(case\s*0|"title"|title)|case 0
-H06	code	must_not	\?\s*"重要"\s*:\s*is_new
+H06	code	must_not	=\s*\$row\['important'\]\s*\?
 H07	code	must_not	\bmktime\s*\(\s*\)
 H08	code	must_not	\bstrftime\s*\(
 H09	code	must_not	\bereg\s*\(
@@ -21,7 +21,7 @@ H16	code	must_not	\$HTTP_\w+_VARS
 H17	code	must_not	\$\{\w+\}
 H18	code	must_not	implode\s*\(\s*array\s*\([^;]*\)\s*,\s*","\s*\)
 H19	inventory	must	output_buffering
-H20	code	must_not	\$PHP_AUTH_(USER|PW)\b
+H20	code	must	\$_SERVER\b
 H21	inventory	must	magic_quotes
 H22	inventory	must	(?i)(stripslashes|バックスラッシュ|\\\\).{0,200}(DB|データ|保存|格納)|(DB|データ|保存|格納).{0,200}(stripslashes|バックスラッシュ)
 H24	code	must	mb_strlen\s*\([^;]*(SJIS|CP932|SJIS-win)
@@ -31,5 +31,5 @@ H27	inventory	must	(?i)(機種依存|CP932|SJIS-win|Windows-31J|①|髙)
 H29	inventory	must	(?i)timezone|タイムゾーン|date\(
 H31	inventory	must	(?i)XSS|\$msg
 H32	inventory	must	(?i)SQL\s*インジェクション|SQL injection
-H33	inventory	must	(?i)ADMIN_PASS|パスワード.{0,20}(直書き|ハードコード|平文)
+H33	inventory	must	(?i)ADMIN_PASS|パスワード.{0,20}(直書き|ハードコード|平文)|(直書き|ハードコード|平文).{0,20}パスワード
 H35	inventory	must	\bvar\b

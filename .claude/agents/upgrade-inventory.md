@@ -34,7 +34,7 @@ tools: Read, Grep, Glob, Bash, Write
    - 文字コード（htmlspecialchars の既定、mb_* の既定、Content-Type、meta charset、CP932 の 0x5C 問題、DB 側の文字列処理）
    - ODBC / DB ドライバの違い（LIKE、型、件数、**列名の大文字小文字**、文字列長がバイト単位か文字単位か）
    - 並び順（PHP の `sort` / `strcmp`、SQL の `ORDER BY`）が文字コードに依存していないか（UTF-8 化で変わる）
-4. ソースの外の前提（R14）: 拡張、ODBC の DSN とドライバ、php.ini、タイムゾーン、Apache の設定、cron。inventory-raw.md の「ソースの外の前提」を材料にする。
+4. ソースの外の前提（R14）: 拡張、ODBC の DSN とドライバ、php.ini（特に output_buffering と default_charset）、タイムゾーン、Apache の設定（`.inc` や `.tpl` がそのまま配信されないか）、cron。inventory-raw.md の「ソースの外の前提」を材料にする。
 5. 「当時のバグ」（直さないが、直さないことを人が確認すべきもの）と、セキュリティの問題（改善 3E の対象。エラー時に SQL を画面に出す、XSS、SQL インジェクション、認証情報の直書き）も一覧に入れる。
    `var` のように「動くが揃えたいもの」も、対応不要として 1 行載せる（載せないと見逃しと区別できない）。
 6. `newapp/docs/inventory.md` をテンプレートに沿って書く。各課題に、ルール ID、場所（ファイル:行。**行番号は移行元 app/ の行**）、症状、方針、人の判断の要否。

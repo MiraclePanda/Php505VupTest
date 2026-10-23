@@ -80,7 +80,7 @@ def main():
         env["SRC_ENCODING"] = {"cp932": "CP932", "euc_jp": "EUC-JP"}.get(enc, enc)
     try:
         out = subprocess.run(["scripts/upgrade/verify.sh", "hidden-eval"], cwd=target,
-                             capture_output=True, text=True, env=env).stdout
+                             capture_output=True, text=True, errors="replace", env=env).stdout
     finally:
         for name, data in backup.items():
             p = os.path.join(tests, name)
