@@ -4,11 +4,11 @@
 #   短縮タグの検出は scan.py（R01）で行うこと。
 #   usage: scripts/upgrade/lint.sh [dir_or_file...]   （既定: newapp/app）
 #   環境変数 PHP85_IMAGE で使うイメージを変えられる（既定: php:8.5-cli）
-#   拡張子は LINT_EXT（既定: "php inc"）で指定する。
+#   拡張子は LINT_EXT（既定: "php inc tpl phtml"。.tpl など include されるテンプレートも PHP として扱う）で指定する。
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 IMAGE=${PHP85_IMAGE:-php:8.5-cli}
-EXTS=${LINT_EXT:-php inc}
+EXTS=${LINT_EXT:-php inc tpl phtml}
 [ $# -eq 0 ] && set -- newapp/app
 files=()
 for t in "$@"; do

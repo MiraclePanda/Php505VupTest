@@ -23,10 +23,11 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 |---|---|
 | `scripts/upgrade/init.sh` | `app/` を `newapp/app/` にバイト単位で複写し、`newapp/docs/` にテンプレートを置く |
 | `scripts/upgrade/inventory.sh` | 機械検出（旧 php.ini、php -l、register_globals 候補、ルール別 grep）を Markdown で出力 |
-| `scripts/upgrade/eucjp.py` | **EUC-JP ファイルの読み書き**。Edit / Write は UTF-8 以外を扱えないので必ずこれを使う |
+| `scripts/upgrade/eucjp.py` | **非 UTF-8 ファイルの読み書き**（cat / write / replace [--regex] / check / detect）。Edit / Write は UTF-8 以外を扱えないので必ずこれを使う。文字コードは `.upgrade.env` |
+| `scripts/upgrade/utf8-mirror.sh` | 移行元・移行先の UTF-8 の写しを `.work/utf8/` に作る。エージェントはこれを Read で読む（ファイルごとの iconv は許可の確認で止まる） |
 | `scripts/upgrade/lint.sh` | PHP 8.5 で `php -l`（Deprecated も失敗扱い） |
 | `scripts/upgrade/scan.py --rule Rnn` | ルール 1 つの残件確認 |
-| `scripts/upgrade/verify.sh <label>` | 構文・文字コード・新環境での特性テスト・PHP エラー検出・期待値との照合・前ステップとの差分 |
+| `scripts/upgrade/verify.sh <label>` | 構文・文字コード・新環境での特性テスト・PHP エラー検出・期待値との照合・前ステップとの差分。末尾に要約行。`KEEP=1` でコンテナを残す |
 | `scripts/upgrade/tools/like-charset-check.php` | DB の LIKE が非 UTF-8 のデータを正しく検索できるかを測る（R12） |
 | フック（`.claude/settings.json`） | app/ と golden/ の書き換え拒否、解答キーの参照拒否、newapp 変更後の自動 lint |
 
@@ -35,6 +36,7 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 ### 0. 準備
 - Docker が動くこと（クラウドでは `sudo dockerd > /tmp/dockerd.log 2>&1 &`）。新環境イメージは `verify.sh` が必要に応じて `build-modern-image.sh` でビルドする。
 - 作業ブランチを切る。`scripts/upgrade/init.sh` を実行し、そのままコミット（「移行元を複写」）。
+  init.sh は移行元の文字コードを推定し、`.upgrade.env` がなければ作る。**推定結果と php.ini（default_charset、mbstring）、HTML の meta charset が一致するか確認する。**
 - 移行前のアプリを新環境で動かしたスナップショットを取る: `APP_DIR=app scripts/upgrade/verify.sh 00-original`（壊れ方の記録。NG で正常）。
 
 ### 1. 棚卸し（エージェント `upgrade-inventory`）
@@ -45,13 +47,13 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 - 「当時のバグ」（エラー時に 200 で die する、エスケープが二重になる等）も、直さない前提で一覧に載せる。直さないことを人が確認できるようにするため。
 - コミット: 「棚卸し」
 
-### 1.5 期待値とテストケースを足す（ゴールデンがない場合は必須）
+### 1.5 期待値とテストケースを足す（エージェント `upgrade-expectations`。ゴールデンがない場合は必須）
 - **ゴールデンがないと、`verify.sh` は「PHP エラーが出ない」ことしか確かめられない。** PHP エラーを出さずに結果だけが変わる回帰
   （検索結果が 0 件になる等）を見逃す（2026-10-22-01 で実際に起きた）。
 - 棚卸しの各課題について、旧環境ならどう応答するかを `tests/characterization/expectations.tsv` に書く。
   新でも成り立つべきものは `must`、旧のバグなど移行で変わりうるものは `legacy`。
 - 既存の特性テストが課題を踏んでいなければ、`tests/characterization/run.sh` にケースを足す。
-  ルールの「落とし穴」と「学び」が材料（1 文字の日本語検索、文字境界をまたぐ語、空のパラメータ、末尾に改行のある数値、項目の欠落）。
+  ルールの「落とし穴」と「学び」が材料（1 文字の日本語検索、文字境界をまたぐ語、空のパラメータ、末尾に改行のある数値、項目の欠落、**配列のパラメータ**）。
 - テストの追加は移行とは別のコミットにする。
 - コミット: 「特性テストの期待値とケースを追加」
 
@@ -71,7 +73,13 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 - 次に Fatal を出すもの（R06 構文 → R08 関数 → R04 セッション）。画面が動く状態を早く作り、以後のステップで画面単位の差分を見られるようにする。
 - R11（比較規則）は R09（プレースホルダ化）より先に。逆にすると SQL エラー（うるさい失敗）が 0 件（静かな失敗）に変わって見えなくなる。
 - R05（magic_quotes）と R09（DB のプレースホルダ化）は同時に効かせないと、`'` を含む入力で SQL エラーになる中間状態ができる。R05 では表示側の `stripslashes` だけ外し、SQL 側は R09 で直す。中間状態の差分は検証で「R09 で直る」と記録する。
+- R15（入力の型）は R03 で作る入力ヘルパーに入れるのが最も安い。R03 と同時か直後に。
 - R12（DB の文字コード）はデータ移行スクリプト `newapp/db/migrate.php` と DB ラッパーの変換を同じコミットにする。
+
+### 2.9 最後の意味レビュー（`upgrade-reviewer`）
+全ルールを適用したら、`app/` → `newapp/app/` 全体を対象にもう一度レビューする。ルールごとのレビューでは見えない、
+ルールの間に落ちる課題（入力の型、巨大な数値、不正なバイト列、DB の文字列長）を `KEEP=1` のコンテナで実際に試す。
+回帰は該当ルールの追加コミットで直し、特性テストにそのケースを足す（別コミット）。
 
 ### 3. 差分の分類（人に上げる）
 - ゴールデン（旧環境の記録）があれば `compare.sh` の差分、なければ「旧環境ならこう出たはず」という推定との差分を、`newapp/docs/diff-classification.md` に書く。
@@ -87,6 +95,25 @@ description: PHP 5.x（register_globals / magic_quotes 時代）のアプリを 
 ### 5. 振り返り（`upgrade-retro` スキル）
 移行が終わったら必ず実行する。採点（解答キーとの突き合わせ）と、`knowledge/` と `rules/` への学びの反映を行う。
 **次回の精度はここで決まる。**
+
+## エージェントに分けて動かすとき
+
+オーケストレーター（このスキルを実行している本体）は次のように振り分ける。各エージェントは文脈を持たずに始まるので、**依頼文に必要なことを全部書く**。
+
+| 手順 | エージェント | 依頼文に書くこと | 受け取るもの |
+|---|---|---|---|
+| 1 | `upgrade-inventory` | 対象（`app/`）、文字コードの推定結果、解答キーを読まないこと | 課題数、人の判断が要る点 |
+| 1.5 | `upgrade-expectations` | 棚卸しの場所、ゴールデンの有無 | 追加ケース数、期待値数、自信のないもの |
+| 2 | `upgrade-migrator` | **ルール ID 1 つ**、前のルールで作ったヘルパー（名前と場所）、前のレビューの申し送り | 変更箇所、残した候補、気づいた他ルールの課題 |
+| 2 | `upgrade-verifier` | ラベル（ルール ID）、このルールで変わるはずのケース | RESULT、変わったケースの分類案 |
+| 2 / 2.9 | `upgrade-reviewer` | 差分の範囲（コミット）、旧 php.ini のファイル、試してほしい入力 | 回帰 / 仕様変更候補の案 |
+
+- `.claude/agents/` の定義がサブエージェントの種類として登録されない環境（クラウドのセッションなど）では、汎用のエージェントに「`.claude/agents/<名前>.md` を読んでその役割に従う」と依頼する。
+- 移行担当には、依存の近いルールを 2〜4 個まとめて渡してよい（例: R02・R03・R15、R07・R05・R11、R09・R12・R10・R13）。その場合もルールごとに verify とコミットをさせる（2026-10-22-03 で実施）。
+- コミットはオーケストレーターか、ルールごとにコミットするよう指示した移行担当が行う。1 ルール 1 コミット。
+- 人の判断が要る点で人が不在なら、推奨案（旧の挙動を保つ）を依頼文に「承認待ちの方針」として書いて進め、分類案に載せる。
+- エージェントの報告にある「他ルールの課題」「道具で困ったこと」は捨てずに、該当ルールの依頼文か振り返りに回す。
+- 許可の確認で止まらないよう、依頼文に「`utf8-mirror.sh` の写しを Read で読む」「読み取りコマンドはまとめて 1 回で実行する」を入れる。
 
 ## 判断の原則
 - 旧の挙動を保つのが既定。旧の挙動がバグや脆弱性でも、互換移行では原則そのまま残し、直すなら改善（3E）として別コミット・別 PR にする。

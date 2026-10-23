@@ -26,7 +26,7 @@ foreach (array_slice($argv, 1) as $t) {
     if (is_dir($t)) {
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($t, FilesystemIterator::SKIP_DOTS));
         foreach ($it as $f) {
-            if (preg_match('/\.(php|inc|phtml)$/', $f->getFilename())) {
+            if (preg_match('/\.(php|inc|phtml|tpl)$/', $f->getFilename())) {
                 $files[] = $f->getPathname();
             }
         }

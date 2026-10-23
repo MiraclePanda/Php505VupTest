@@ -10,6 +10,8 @@ detect:
   - '\$DB_(DSN|HOST|USER|PASS)\b'
   - '\b(ini_set|ini_get)\s*\('
   - '\bdl\s*\('
+  - '\bheader\s*\('
+  - '\bsetcookie\s*\('
 ---
 ## 何が起きるか
 アプリのソースの外にある前提（PHP 拡張、ODBC の DSN 定義とドライバ、php.ini の値、OS のタイムゾーン）が移行先で欠けると、
@@ -25,3 +27,6 @@ detect:
 ## 直し方
 - 移行先の環境定義（Dockerfile、構成管理）に、拡張、DSN、ドライバ、php.ini を書く。
 - 移行レポートの「環境」の節に、旧と新の対応表を書く。
+- 2026-10-22-03（app2）: **output_buffering に頼った `header()`**。旧 php.ini が `output_buffering = 4096` だと、テンプレートを出力した後の `header("Location: ...")` や、`?>` と `<?` の間の空行の後の `header()` が動いていた。新環境の既定は 0 で「headers already sent」になりリダイレクトしない。旧 php.ini の output_buffering を必ず確認し、新の php.ini（`docker/modern/php.ini`。verify.sh がコンテナに重ねる）で合わせるか、出力の前に判定を移す。
+- 2026-10-22-03（app2）: 旧 php.ini の `default_charset` が `Shift_JIS` だと、旧は Content-Type に charset が付いていた（app1 は空で付かなかった）。PHP 8 では `default_charset` が htmlspecialchars と mb_* の既定文字コードにもなる（`mbstring.internal_encoding` は非推奨）。
+- 2026-10-22-03（app2）: Apache の `AddType` が `.php` だけで、`include/*.inc` や `templates/*.tpl` がそのまま配信され、DSN や管理者パスワードが読める（旧からの脆弱性）。棚卸しで Apache の設定と docroot 配下のファイルを確認し、改善（3E）に上げる。

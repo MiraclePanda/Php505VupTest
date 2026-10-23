@@ -1,6 +1,6 @@
 # 特性テストの期待値（旧環境の挙動を、コードと php.ini から推定したもの）
 #   ゴールデン（旧環境の実測）がない間の安全網。ゴールデンを記録したら、食い違う行を実測に合わせて直すこと。
-#   列: ケース名 <TAB> 種別 <TAB> 応答（UTF-8 に変換したもの）に含まれるべき文字列（re: で始まれば行単位の正規表現）
+#   列: ケース名 <TAB> 種別 <TAB> 応答（UTF-8 に変換したもの）に含まれるべき文字列（re: で始まれば行単位の正規表現、! で始まれば「含まれない」）
 #   種別 must   : 新環境でも成り立つべきもの。外れたら回帰（verify.sh が NG にする）
 #        legacy : 旧環境ではこうだったと推定されるが、移行で変わりうるもの。外れたら差分の分類案に載せる（NG にはしない）
 01_search_top	must	12 件中 1〜5 件を表示
@@ -44,5 +44,12 @@
 26_search_category_text	must	12 件中 1〜5 件を表示
 27_search_page_newline	must	12 件中 1〜5 件を表示
 28_search_backslash	must	「\」に該当する商品はありません。
+# 型の違う入力: 旧（PHP 5.0）は関数ごとに "Array" への変換や null 返しで処理を続けた。新で Fatal にならないこと（PHP エラーは verify.sh が検出）
+29_search_keyword_array	must	12 件中 1〜5 件を表示
+30_search_category_array	legacy	SQLエラー
+31_login_array	must	ログインIDまたはパスワードが違います。
+32_login_ok_again	must	Location: index.php
+33_update_name_array	legacy	Location: index.php?msg=updated
+33_update_name_array	must	!Fatal error
 # 全画面: 旧は default_charset が空で Content-Type に charset が付かなかった（R10 で charset=EUC-JP を明示した）
 01_search_top	legacy	re:^Content-Type: text/html$

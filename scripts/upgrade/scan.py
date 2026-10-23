@@ -14,7 +14,23 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RULES_DIR = os.path.join(ROOT, ".claude", "skills", "php-upgrade", "rules")
 EXTS = (".php", ".inc", ".phtml", ".tpl", ".html")
-ENC = os.environ.get("SRC_ENCODING", "EUC-JP")
+def _src_encoding(default="EUC-JP"):
+    """環境変数 SRC_ENCODING、なければリポジトリ直下の .upgrade.env の SRC_ENCODING、なければ default。"""
+    if os.environ.get("SRC_ENCODING"):
+        return os.environ["SRC_ENCODING"]
+    d = os.path.dirname(os.path.abspath(__file__))
+    while d != os.path.dirname(d):
+        p = os.path.join(d, ".upgrade.env")
+        if os.path.exists(p):
+            for line in open(p, encoding="utf-8"):
+                m = re.match(r"\s*SRC_ENCODING\s*=\s*(\S+)", line)
+                if m:
+                    return m.group(1)
+        d = os.path.dirname(d)
+    return default
+
+
+ENC = _src_encoding()
 
 
 def load_rules():

@@ -1,0 +1,35 @@
+# app2 の解答キー（traps.md）の項目ごとの客観チェック。書式は eval/checks.tsv と同じ
+H01	code	must_not	<\?(?![pP][hH][pP]|=|xml)
+H02	file:.upgrade.env	must	SRC_ENCODING\s*=\s*(CP932|SJIS-win|Windows-31J|SHIFT_JIS|SJIS)
+H03	code	must_not	function\s+__autoload\b
+H03	code	must	spl_autoload_register
+H04	code	must_not	\blist_max\b
+H04	code	must_not	define\s*\([^;]*,\s*true\s*\)
+H05	inventory	must	(?s)switch.{0,300}(case\s*0|"title"|title)|case 0
+H06	code	must_not	=\s*\$row\['important'\]\s*\?
+H07	code	must_not	\bmktime\s*\(\s*\)
+H08	code	must_not	\bstrftime\s*\(
+H09	code	must_not	\bereg\s*\(
+H10	code	must_not	\beregi_replace\s*\(
+H11	code	must	function\s+__construct
+H11	code	must	parent::__construct
+H12	code	must	(var|public|protected|private)\s+\$loaded|#\[AllowDynamicProperties\]
+H13	code	must_not	\bcall_user_method\s*\(
+H14	code	must_not	array_key_exists\s*\(\s*'tags'\s*,\s*\$notice
+H15	code	must_not	\bsplit\s*\(
+H16	code	must_not	\$HTTP_\w+_VARS
+H17	code	must_not	\$\{\w+\}
+H18	code	must_not	implode\s*\(\s*array\s*\([^;]*\)\s*,\s*","\s*\)
+H19	inventory	must	output_buffering
+H20	code	must	\$_SERVER\b
+H21	inventory	must	magic_quotes
+H22	inventory	must	(?i)(stripslashes|バックスラッシュ|\\\\).{0,200}(DB|データ|保存|格納)|(DB|データ|保存|格納).{0,200}(stripslashes|バックスラッシュ)
+H24	code	must	mb_strlen\s*\([^;]*(SJIS|CP932|SJIS-win)
+H25	code	must	htmlspecialchars\s*\([^;]*(SJIS|Shift_JIS|CP932|SJIS-win)
+H26	code	must	charset=Shift_JIS|default_charset
+H27	inventory	must	(?i)(機種依存|CP932|SJIS-win|Windows-31J|①|髙)
+H29	inventory	must	(?i)timezone|タイムゾーン|date\(
+H31	inventory	must	(?i)XSS|\$msg
+H32	inventory	must	(?i)SQL\s*インジェクション|SQL injection
+H33	inventory	must	(?i)ADMIN_PASS|パスワード.{0,20}(直書き|ハードコード|平文)|(直書き|ハードコード|平文).{0,20}パスワード
+H35	inventory	must	\bvar\b
